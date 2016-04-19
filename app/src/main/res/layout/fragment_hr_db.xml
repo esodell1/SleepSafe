@@ -1,0 +1,35 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/db_item_height"
+    android:layout_margin="@dimen/db_item_margin"
+    tools:context=".fragments.HrDbFragment"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:background="@color/colorAccent"
+    android:weightSum="1"
+    android:gravity="center"
+    android:minHeight="@dimen/db_item_height">
+
+    <TableRow android:gravity="center">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/db_heart_rate"
+            style="@style/AppTheme"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="80"
+            android:id="@+id/textView"
+            android:gravity="center"
+            android:textSize="48sp" />
+    </TableRow>
+
+
+</TableLayout>

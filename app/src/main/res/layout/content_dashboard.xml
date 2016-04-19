@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity"
+    tools:showIn="@layout/activity_dashboard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/db_item_height"
+            android:layout_margin="@dimen/db_item_margin">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/db_item_margin"
+                android:layout_marginRight="@dimen/db_item_margin"
+                android:background="@color/colorAccent"
+                android:text="@string/button_start"
+                android:id="@+id/button_start" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/db_item_margin"
+                android:layout_marginLeft="@dimen/db_item_margin"
+                android:background="@color/colorAccent"
+                android:text="@string/button_stop"
+                android:id="@+id/button_stop" />
+        </LinearLayout>
+
+        <fragment
+            android:id="@+id/hrdb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/db_item_margin"
+            android:name="edu.uw.tacoma.esodell.sleepsafe.fragments.HrDbFragment"
+            class="edu.uw.tacoma.esodell.sleepsafe.fragments.HrDbFragment"
+            tools:layout="@layout/fragment_hr_db" />
+
+        <fragment
+            android:id="@+id/spo2db"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/db_item_margin"
+            android:name="edu.uw.tacoma.esodell.sleepsafe.fragments.Spo2DbFragment"
+            class="edu.uw.tacoma.esodell.sleepsafe.fragments.Spo2DbFragment"
+            tools:layout="@layout/fragment_spo2_db" />
+
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
