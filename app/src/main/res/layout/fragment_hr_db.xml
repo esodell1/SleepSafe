@@ -6,10 +6,10 @@
     tools:context=".fragments.HrDbFragment"
     android:clickable="true"
     android:orientation="horizontal"
-    android:background="@color/colorAccent"
     android:weightSum="1"
     android:gravity="center"
-    android:minHeight="@dimen/db_item_height">
+    android:minHeight="@dimen/db_item_height"
+    android:background="@drawable/border">
 
     <TableRow android:gravity="center">
         <TextView
@@ -29,6 +29,18 @@
             android:id="@+id/textView"
             android:gravity="center"
             android:textSize="48sp" />
+    </TableRow>
+    <TableRow android:gravity="center">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/seekBar"
+            android:progress="75"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/db_item_margin" />
+
     </TableRow>
 
 

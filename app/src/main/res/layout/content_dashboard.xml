@@ -25,7 +25,7 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/db_item_margin"
                 android:layout_marginRight="@dimen/db_item_margin"
-                android:background="@color/colorAccent"
+                android:background="@drawable/border"
                 android:text="@string/button_start"
                 android:id="@+id/button_start" />
 
@@ -35,7 +35,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="@dimen/db_item_margin"
                 android:layout_marginLeft="@dimen/db_item_margin"
-                android:background="@color/colorAccent"
+                android:background="@drawable/border"
                 android:text="@string/button_stop"
                 android:id="@+id/button_stop" />
         </LinearLayout>

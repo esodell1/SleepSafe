@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+
 import edu.uw.tacoma.esodell.sleepsafe.R;
 
 public class HrActivity extends AppCompatActivity {
@@ -117,8 +119,11 @@ public class HrActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_hr, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            LineChart chart = (LineChart) getActivity().findViewById(R.id.chart);
+            if (chart != null) {
+                Snackbar.make(container, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
             return rootView;
         }
     }
