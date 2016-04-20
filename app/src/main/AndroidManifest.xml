@@ -22,23 +22,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activities.DashboardActivity"
             android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
-        <activity
-            android:name=".activities.HrActivity"
-            android:label="@string/title_activity_hr"
-            android:parentActivityName=".activities.DashboardActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -52,12 +40,31 @@
             android:name=".services.MonitorSvc"
             android:exported="false" />
 
-        <!--<activity-->
-            <!--android:name=".activities.LoginActivity"-->
-            <!--android:label="@string/title_activity_login"-->
-            <!--android:theme="@style/AppTheme.NoActionBar">-->
+        <!-- <activity -->
+        <!-- android:name=".activities.LoginActivity" -->
+        <!-- android:label="@string/title_activity_login" -->
+        <!-- android:theme="@style/AppTheme.NoActionBar"> -->
 
-        <!--</activity>-->
+
+        <!-- </activity> -->
+        <activity
+            android:name=".activities.Spo2Activity"
+            android:label="@string/title_activity_spo2"
+            android:parentActivityName=".activities.DashboardActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
+        </activity>
+        <activity
+            android:name=".activities.HrActivity"
+            android:label="@string/title_activity_hr"
+            android:parentActivityName=".activities.DashboardActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
+        </activity>
     </application>
 
 </manifest>

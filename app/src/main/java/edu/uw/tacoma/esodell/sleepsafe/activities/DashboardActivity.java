@@ -49,8 +49,7 @@ public class DashboardActivity extends AppCompatActivity {
         spo2db_fragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "SpO2 clicked!", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                startActivity(new Intent(getApplicationContext(), Spo2Activity.class));
             }
         });
     }
