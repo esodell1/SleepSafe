@@ -23,12 +23,20 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:layout_weight="0.25"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="95%"
-            android:id="@+id/textView"
-            android:gravity="center"
+            android:text="@string/default_db_value"
+            android:id="@+id/spo2_value"
+            android:gravity="center|end"
             android:textSize="48sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/db_percent_tag"
+            android:gravity="center|start"
+            android:textSize="18sp" />
     </TableRow>
 
     <TableRow android:gravity="center">

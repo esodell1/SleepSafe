@@ -88,4 +88,7 @@
         completions."
     </string>
     <string name="title_activity_spo2">Blood Oxygen</string>
+    <string name="default_db_value">--</string>
+    <string name="db_bpm_tag">\u00A0BPM</string>
+    <string name="db_percent_tag">\u00A0%</string>
 </resources>
