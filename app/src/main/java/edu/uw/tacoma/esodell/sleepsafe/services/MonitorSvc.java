@@ -3,8 +3,14 @@ package edu.uw.tacoma.esodell.sleepsafe.services;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.util.ArraySet;
 import android.util.Log;
 
@@ -22,6 +28,8 @@ public class MonitorSvc extends IntentService {
 
     protected static boolean SERVICE_RUNNING = false;
 
+    private String user = null;
+    private BroadcastReceiver mReceiver;
     private static List<Sample> samples;
 
     public MonitorSvc() {
@@ -30,19 +38,37 @@ public class MonitorSvc extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(ACTION_STOP_SERVICE)) {
+                    stopSelf();
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_STOP_SERVICE);
+        registerReceiver(mReceiver,filter);
+
         if (intent != null) {
             final String action = intent.getAction();
+
             if (action.equals(ACTION_START_SERVICE)) {
                 startSvc(intent.getStringExtra("user"));
-
-            } else if (action.equals(ACTION_STOP_SERVICE)) {
-                stopSvc();
-
             }
         }
     }
 
+    @Override
+    public void onDestroy() {
+        stopSvc();
+        super.onDestroy();
+    }
+
     private void startSvc(String user) {
+        this.user = user;
         SERVICE_RUNNING = true;
         Log.v(TAG, "Service started for user: " + user);
 
@@ -64,7 +90,6 @@ public class MonitorSvc extends IntentService {
             while (SERVICE_RUNNING) {
                 Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
                 samples.add(sample);
-                Log.v(TAG, sample.toString());
 
                 Intent broadcast = new Intent();
                 broadcast.setAction("new_sample");
@@ -86,7 +111,11 @@ public class MonitorSvc extends IntentService {
 
     private void stopSvc() {
         SERVICE_RUNNING = false;
-
+        unregisterReceiver(mReceiver);
+        Log.v(TAG, "Service terminated for user: " + user);
     }
+
+
+
 
 }

@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +29,7 @@ public class DashboardActivity extends AppCompatActivity {
     private Button stop_button;
     public String user;
     private BroadcastReceiver mReceiver;
+    private Intent mService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,19 +71,19 @@ public class DashboardActivity extends AppCompatActivity {
         start_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MonitorSvc.class);
-                intent.setAction(MonitorSvc.ACTION_START_SERVICE);
-                intent.putExtra("user", user);
-                startService(intent);
+                mService = new Intent(getApplicationContext(), MonitorSvc.class);
+                mService.setAction(MonitorSvc.ACTION_START_SERVICE);
+                mService.putExtra("user", user);
+                startService(mService);
             }
         });
 
         stop_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MonitorSvc.class);
-                intent.setAction(MonitorSvc.ACTION_STOP_SERVICE);
-                startService(intent);
+                Intent broadcast = new Intent();
+                broadcast.setAction(MonitorSvc.ACTION_STOP_SERVICE);
+                sendBroadcast(broadcast);
             }
         });
 
@@ -99,6 +102,8 @@ public class DashboardActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), hr_val.getText(), Toast.LENGTH_SHORT).show();
             }
         };
+
+
     }
 
     @Override
