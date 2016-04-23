@@ -34,6 +34,9 @@ public class MonitorSvc extends IntentService {
     public static final String ACTION_START_SERVICE = "start_svc";
     public static final String ACTION_STOP_SERVICE = "stop_svc";
 
+    // URL of emulator server (to be replaced by device):
+    final String BASE_URL = "http://192.168.0.12:8080/";
+
     public static boolean SERVICE_RUNNING = false;
 
     private String user = null;
@@ -151,29 +154,15 @@ public class MonitorSvc extends IntentService {
 
             // Will contain the raw JSON response as a string.
             String jsonStr = null;
-            String format = "json";
-            String units = "imperial";
-            String appid = "b0d7fdda0ed3a33c86985bfda8d2d5ce";
-            Integer numDays = 7;
 
             try {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
-                final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String QUERY_PARAM = "q";
-                final String FORMAT_PARAM = "mode";
-                final String UNITS_PARAM = "units";
-                final String APPID_PARAM = "appid";
-                final String DAYS_PARAM = "cnt";
+                final String SAMPLE_PARAM = "sample";
+                final String DEV_INFO_PARAM = "DevInfo";
 
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, params[0])
-                        .appendQueryParameter(FORMAT_PARAM, format)
-                        .appendQueryParameter(UNITS_PARAM, units)
-                        .appendQueryParameter(APPID_PARAM, appid)
-                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-                        .build();
+                Uri builtUri = Uri.parse(BASE_URL + SAMPLE_PARAM);
 
                 URL url = new URL(builtUri.toString());
 
@@ -221,15 +210,35 @@ public class MonitorSvc extends IntentService {
                     }
                 }
             }
-
+            Sample result;
+            try {
+                result = getSampleFromJSON(jsonStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
             Log.v(TAG, jsonStr);
-            return new Sample(70, 90, 90);
+            return result;
+        }
+
+        private Sample getSampleFromJSON(String jsonString) throws JSONException {
+            final String HR_DATA = "HR";
+            final String SPO2_DATA = "SpO2";
+            final String TEMP_DATA = "Temp";
+            final String val = "value";
+
+            JSONObject result = new JSONObject(jsonString);
+            int hr = result.getJSONObject(HR_DATA).getInt(val);
+            int spo2 = result.getJSONObject(SPO2_DATA).getInt(val);
+            int temp = result.getJSONObject(TEMP_DATA).getInt(val);
+            return new Sample (hr, spo2, temp);
         }
 
         @Override
         protected void onPostExecute(Sample result) {
             if (result != null) {
                 Log.v(TAG, result.toString());
+                newSample(result);
             }
         }
     }
