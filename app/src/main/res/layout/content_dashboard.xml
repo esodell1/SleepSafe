@@ -37,7 +37,8 @@
                 android:layout_marginLeft="@dimen/db_item_margin"
                 android:background="@drawable/border"
                 android:text="@string/button_stop"
-                android:id="@+id/button_stop" />
+                android:id="@+id/button_stop"
+                android:enabled="false" />
         </LinearLayout>
 
         <fragment

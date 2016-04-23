@@ -84,20 +84,27 @@ public class DashboardActivity extends AppCompatActivity {
                 Intent broadcast = new Intent();
                 broadcast.setAction(MonitorSvc.ACTION_STOP_SERVICE);
                 sendBroadcast(broadcast);
+                start_button.setEnabled(true);
+                stop_button.setEnabled(false);
             }
         });
 
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int hr, spo2, temp;
-                hr = intent.getIntExtra("hr", 0);
-                spo2 = intent.getIntExtra("spo2", 0);
-                temp = intent.getIntExtra("temp", 0);
-                TextView hr_val = (TextView) findViewById(R.id.hr_value);
-                TextView spo2_val = (TextView) findViewById(R.id.spo2_value);
-                if (hr_val != null) hr_val.setText(Integer.toString(hr));
-                if (spo2_val != null) spo2_val.setText(Integer.toString(spo2));
+                if (intent.getAction().equals("new_sample")) {
+                    int hr, spo2, temp;
+                    hr = intent.getIntExtra("hr", 0);
+                    spo2 = intent.getIntExtra("spo2", 0);
+                    temp = intent.getIntExtra("temp", 0);
+                    TextView hr_val = (TextView) findViewById(R.id.hr_value);
+                    TextView spo2_val = (TextView) findViewById(R.id.spo2_value);
+                    if (hr_val != null) hr_val.setText(Integer.toString(hr));
+                    if (spo2_val != null) spo2_val.setText(Integer.toString(spo2));
+                } else if (intent.getAction().equals("service_running")) {
+                    start_button.setEnabled(false);
+                    stop_button.setEnabled(true);
+                }
 
                 //Toast.makeText(getApplicationContext(), hr_val.getText(), Toast.LENGTH_SHORT).show();
             }
@@ -131,6 +138,7 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onResume() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("new_sample");
+        filter.addAction("service_running");
         registerReceiver(mReceiver,filter);
         super.onResume();
     }

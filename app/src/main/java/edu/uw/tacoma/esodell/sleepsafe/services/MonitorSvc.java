@@ -34,7 +34,7 @@ public class MonitorSvc extends IntentService {
     public static final String ACTION_START_SERVICE = "start_svc";
     public static final String ACTION_STOP_SERVICE = "stop_svc";
 
-    protected static boolean SERVICE_RUNNING = false;
+    public static boolean SERVICE_RUNNING = false;
 
     private String user = null;
     private BroadcastReceiver mReceiver;
@@ -79,6 +79,10 @@ public class MonitorSvc extends IntentService {
         this.user = user;
         SERVICE_RUNNING = true;
         Log.v(TAG, "Service started for user: " + user);
+
+        Intent broadcast = new Intent();
+        broadcast.setAction("service_running");
+        sendBroadcast(broadcast);
 
         Notification.Builder builder = new Notification.Builder(this);
         builder.setSmallIcon(R.drawable.ic_sync_black_24dp);
