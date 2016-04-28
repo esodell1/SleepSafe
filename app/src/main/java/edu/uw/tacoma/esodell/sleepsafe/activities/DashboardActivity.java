@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
-import edu.uw.tacoma.esodell.sleepsafe.network.NsdHelper;
 import edu.uw.tacoma.esodell.sleepsafe.services.MonitorSvc;
 
 public class DashboardActivity extends AppCompatActivity {

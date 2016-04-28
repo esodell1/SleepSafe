@@ -2,8 +2,11 @@ package edu.uw.tacoma.esodell.sleepsafe.fragments;
 
 import android.content.Context;
 import android.net.Uri;
+import android.net.nsd.NsdManager;
+import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
-import edu.uw.tacoma.esodell.sleepsafe.network.NsdHelper;
+import edu.uw.tacoma.esodell.sleepsafe.network.Device;
 
 
 public class DeviceFragment extends Fragment {
@@ -23,6 +26,7 @@ public class DeviceFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private NsdHelper mNSD;
     private List<Device> mDevices;
+    private DeviceListAdapter mAdapter;
 
     public DeviceFragment() {
         // Required empty public constructor
@@ -36,9 +40,6 @@ public class DeviceFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDevices = new ArrayList<>();
-        mDevices.add(new Device("SleepSafe", "192.168.0.1"));
-        mNSD = new NsdHelper(this.getContext());
-        mNSD.initializeNsd();
     }
 
     @Override
@@ -47,8 +48,17 @@ public class DeviceFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_device, container, false);
 
         ListView list = (ListView) result.findViewById(R.id.deviceListView);
-        list.setAdapter(new DeviceListAdapter(getContext(), R.layout.device_list_item, mDevices));
+        mAdapter = new DeviceListAdapter(getContext(), R.layout.device_list_item, mDevices);
+
+        mNSD = new NsdHelper(this.getContext());
+        mNSD.initializeNsd();
+
+        list.setAdapter(mAdapter);
         return result;
+    }
+
+    private void refreshList() {
+        mNSD.discoverServices(mAdapter);
     }
 
     @Override
@@ -65,7 +75,13 @@ public class DeviceFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        mNSD.discoverServices();
+        refreshList();
+    }
+
+    @Override
+    public void onStop() {
+        mNSD.stopDiscovery();
+        super.onStop();
     }
 
     @Override
@@ -89,18 +105,7 @@ public class DeviceFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private class Device {
-
-        public String deviceName;
-        public String deviceIP;
-
-        public Device(String deviceName, String deviceIP) {
-            this.deviceName = deviceName;
-            this.deviceIP = deviceIP;
-        }
-    }
-
-    private class DeviceListAdapter extends ArrayAdapter<Device> {
+    public class DeviceListAdapter extends ArrayAdapter<Device> {
 
         private ArrayList<Device> devices;
 
@@ -128,6 +133,163 @@ public class DeviceFragment extends Fragment {
                 }
             }
             return v;
+        }
+
+
+    }
+
+    public class NsdHelper {
+        Context mContext;
+        NsdManager mNsdManager;
+        NsdManager.ResolveListener mResolveListener;
+        NsdManager.DiscoveryListener mDiscoveryListener;
+        NsdManager.RegistrationListener mRegistrationListener;
+        public static final String SERVICE_TYPE = "_http._tcp.";
+        public static final String TAG = "SleepSafe";
+        public String mServiceName = "SleepSafe";
+        NsdServiceInfo mService;
+        List<String> mEntries;
+        DeviceFragment.DeviceListAdapter mAdapter;
+
+        public NsdHelper(Context context) {
+            mContext = context;
+            mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+        }
+        public void initializeNsd() {
+            initializeResolveListener();
+            //mNsdManager.init(mContext.getMainLooper(), this);
+        }
+        public void initializeDiscoveryListener() {
+            mDiscoveryListener = new NsdManager.DiscoveryListener() {
+                @Override
+                public void onDiscoveryStarted(String regType) {
+                    Log.d(TAG, "Service discovery started: " + regType);
+                }
+                @Override
+                public void onServiceFound(final NsdServiceInfo service) {
+                    // TODO: Determine service type and name, store globally
+                    Log.d(TAG, String.format("%s %s %s %d",
+                            service.getServiceName(), service.getServiceType(),
+                            service.getHost(), service.getPort()));
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.add(new Device(service.getServiceName(), service.getServiceName()));
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    if (mEntries != null) {
+                        mEntries.add(service.getServiceName());
+                    }
+
+                    if (!service.getServiceType().equals(SERVICE_TYPE)) {
+                        Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
+                    } else if (service.getServiceName().equals(mServiceName)) {
+                        Log.d(TAG, "Same machine: " + mServiceName);
+//                    mNsdManager.resolveService(service, mResolveListener);
+                    } else if (service.getServiceName().contains(mServiceName)){
+                        mNsdManager.resolveService(service, mResolveListener);
+                    }
+                }
+                @Override
+                public void onServiceLost(NsdServiceInfo service) {
+                    Log.e(TAG, "service lost" + service);
+                    if (mService == service) {
+                        mService = null;
+                    }
+                }
+                @Override
+                public void onDiscoveryStopped(String serviceType) {
+                    Log.i(TAG, "Discovery stopped: " + serviceType);
+                }
+                @Override
+                public void onStartDiscoveryFailed(String serviceType, int errorCode) {
+                    Log.e(TAG, "Discovery failed: Error code:" + errorCode);
+                }
+                @Override
+                public void onStopDiscoveryFailed(String serviceType, int errorCode) {
+                    Log.e(TAG, "Discovery failed: Error code:" + errorCode);
+                }
+            };
+        }
+        public void initializeResolveListener() {
+            mResolveListener = new NsdManager.ResolveListener() {
+                @Override
+                public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
+                    Log.e(TAG, "Resolve failed" + errorCode);
+                }
+                @Override
+                public void onServiceResolved(NsdServiceInfo serviceInfo) {
+                    Log.e(TAG, "Resolve Succeeded. " + serviceInfo);
+
+                    Log.v(TAG, serviceInfo.toString());
+                    if (serviceInfo.getServiceName().equals(mServiceName)) {
+                        Log.d(TAG, "Same IP.");
+                        return;
+                    }
+                    mService = serviceInfo;
+                }
+            };
+        }
+        public void initializeRegistrationListener() {
+            mRegistrationListener = new NsdManager.RegistrationListener() {
+                @Override
+                public void onServiceRegistered(NsdServiceInfo NsdServiceInfo) {
+                    mServiceName = NsdServiceInfo.getServiceName();
+                    Log.d(TAG, "Service registered: " + mServiceName);
+                }
+                @Override
+                public void onRegistrationFailed(NsdServiceInfo arg0, int arg1) {
+                    Log.d(TAG, "Service registration failed: " + arg1);
+                }
+                @Override
+                public void onServiceUnregistered(NsdServiceInfo arg0) {
+                    Log.d(TAG, "Service unregistered: " + arg0.getServiceName());
+                }
+                @Override
+                public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
+                    Log.d(TAG, "Service unregistration failed: " + errorCode);
+                }
+            };
+        }
+        public void registerService(int port) {
+            tearDown();  // Cancel any previous registration request
+            initializeRegistrationListener();
+            NsdServiceInfo serviceInfo  = new NsdServiceInfo();
+            serviceInfo.setPort(port);
+            serviceInfo.setServiceName(mServiceName);
+            serviceInfo.setServiceType(SERVICE_TYPE);
+            mNsdManager.registerService(
+                    serviceInfo, NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
+        }
+        public void discoverServices(DeviceFragment.DeviceListAdapter adapter) {
+            mAdapter = adapter;
+            stopDiscovery();  // Cancel any existing discovery request
+            initializeDiscoveryListener();
+            mNsdManager.discoverServices(
+                    SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
+        }
+        public void stopDiscovery() {
+            if (mDiscoveryListener != null) {
+                try {
+                    mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+                } finally {
+                }
+                mDiscoveryListener = null;
+            }
+        }
+        public NsdServiceInfo getChosenServiceInfo() {
+            return mService;
+        }
+        public void tearDown() {
+            if (mRegistrationListener != null) {
+                try {
+                    mNsdManager.unregisterService(mRegistrationListener);
+                } finally {
+                }
+                mRegistrationListener = null;
+            }
         }
     }
 }
