@@ -1,30 +1,42 @@
 package edu.uw.tacoma.esodell.sleepsafe.activities;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.uw.tacoma.esodell.sleepsafe.R;
+import edu.uw.tacoma.esodell.sleepsafe.network.NsdHelper;
 import edu.uw.tacoma.esodell.sleepsafe.services.MonitorSvc;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private View hrdb_fragment;
-    private View spo2db_fragment;
     private Button start_button;
     private Button stop_button;
     public String user;
@@ -41,29 +53,36 @@ public class DashboardActivity extends AppCompatActivity {
         user = getIntent().getAction();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Loading device discovery...", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    startActivity(new Intent(getApplicationContext(), DeviceActivity.class));
+                }
+            });
+        }
 
-        hrdb_fragment = findViewById(R.id.hrdb);
-        hrdb_fragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), HrActivity.class));
-            }
-        });
+        View hrdb_fragment = findViewById(R.id.hrdb);
+        if (hrdb_fragment != null) {
+            hrdb_fragment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(getApplicationContext(), HrActivity.class));
+                }
+            });
+        }
 
-        spo2db_fragment = findViewById(R.id.spo2db);
-        spo2db_fragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), Spo2Activity.class));
-            }
-        });
+        View spo2db_fragment = findViewById(R.id.spo2db);
+        if (spo2db_fragment != null) {
+            spo2db_fragment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(getApplicationContext(), Spo2Activity.class));
+                }
+            });
+        }
 
         start_button = (Button) findViewById(R.id.button_start);
         stop_button = (Button) findViewById(R.id.button_stop);
@@ -101,12 +120,13 @@ public class DashboardActivity extends AppCompatActivity {
                     TextView spo2_val = (TextView) findViewById(R.id.spo2_value);
                     if (hr_val != null) hr_val.setText(Integer.toString(hr));
                     if (spo2_val != null) spo2_val.setText(Integer.toString(spo2));
+                    if (start_button.isEnabled()) start_button.setEnabled(false);
+                    if (!stop_button.isEnabled()) stop_button.setEnabled(true);
                 } else if (intent.getAction().equals("service_running")) {
                     start_button.setEnabled(false);
                     stop_button.setEnabled(true);
                 }
 
-                //Toast.makeText(getApplicationContext(), hr_val.getText(), Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -148,4 +168,6 @@ public class DashboardActivity extends AppCompatActivity {
         unregisterReceiver(mReceiver);
         super.onPause();
     }
+
+
 }

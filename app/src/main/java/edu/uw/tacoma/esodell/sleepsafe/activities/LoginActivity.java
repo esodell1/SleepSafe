@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -103,6 +104,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        String user = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.pref_current_user), "");
+
+        if (!user.isEmpty()) {
+            loginAs(user);
+        }
     }
 
     private void populateAutoComplete() {

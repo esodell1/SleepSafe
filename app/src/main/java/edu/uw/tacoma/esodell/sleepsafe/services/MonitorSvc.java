@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.net.nsd.NsdManager;
 import android.os.AsyncTask;
 import android.text.format.Time;
 import android.util.Log;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
 import edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity;
+import edu.uw.tacoma.esodell.sleepsafe.network.NsdHelper;
 
 
 public class MonitorSvc extends IntentService {
@@ -82,6 +84,7 @@ public class MonitorSvc extends IntentService {
         this.user = user;
         SERVICE_RUNNING = true;
         Log.v(TAG, "Service started for user: " + user);
+
 
         Intent broadcast = new Intent();
         broadcast.setAction("service_running");

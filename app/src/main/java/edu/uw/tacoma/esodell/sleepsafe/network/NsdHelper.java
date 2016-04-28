@@ -4,6 +4,11 @@ import android.net.nsd.NsdServiceInfo;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.util.Log;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NsdHelper {
     Context mContext;
@@ -12,9 +17,10 @@ public class NsdHelper {
     NsdManager.DiscoveryListener mDiscoveryListener;
     NsdManager.RegistrationListener mRegistrationListener;
     public static final String SERVICE_TYPE = "_http._tcp.";
-    public static final String TAG = "MonitorService";
-    public String mServiceName = "MonitorService";
+    public static final String TAG = "SleepSafe";
+    public String mServiceName = "SleepSafe";
     NsdServiceInfo mService;
+    List<String> mEntries;
 
     public NsdHelper(Context context) {
         mContext = context;
@@ -36,10 +42,15 @@ public class NsdHelper {
                 Log.d(TAG, String.format("%s %s %s %d",
                         service.getServiceName(), service.getServiceType(),
                         service.getHost(), service.getPort()));
+                if (mEntries != null) {
+                    mEntries.add(service.getServiceName());
+                }
+
                 if (!service.getServiceType().equals(SERVICE_TYPE)) {
                     Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
                 } else if (service.getServiceName().equals(mServiceName)) {
                     Log.d(TAG, "Same machine: " + mServiceName);
+//                    mNsdManager.resolveService(service, mResolveListener);
                 } else if (service.getServiceName().contains(mServiceName)){
                     mNsdManager.resolveService(service, mResolveListener);
                 }
@@ -74,6 +85,8 @@ public class NsdHelper {
             @Override
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
                 Log.e(TAG, "Resolve Succeeded. " + serviceInfo);
+
+                Log.v(TAG, serviceInfo.toString());
                 if (serviceInfo.getServiceName().equals(mServiceName)) {
                     Log.d(TAG, "Same IP.");
                     return;
