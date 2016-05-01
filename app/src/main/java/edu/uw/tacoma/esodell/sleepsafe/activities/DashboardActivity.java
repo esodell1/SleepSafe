@@ -155,6 +155,9 @@ public class DashboardActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+        } else if (id == R.id.action_logout) {
+            mSharedPref.edit().putString(getString(R.string.pref_app_username), null).apply();
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

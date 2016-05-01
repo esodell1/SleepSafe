@@ -102,4 +102,5 @@
     <string name="title_activity_devices">DevicesActivity</string>
     <string name="title_activity_device">Select a Device</string>
     <string name="device_name">device_name</string>
+    <string name="action_logout">Logout</string>
 </resources>
