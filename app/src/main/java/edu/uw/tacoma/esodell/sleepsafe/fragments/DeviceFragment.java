@@ -231,10 +231,8 @@ public class DeviceFragment extends Fragment {
         }
 
         public void resolveService(android.net.nsd.NsdServiceInfo nsdInfo) {
-            Log.v("RESOLVER: ", nsdInfo.toString());
             if ((nsdInfo.getServiceName() != null && !nsdInfo.getServiceName().isEmpty())
             && (nsdInfo.getServiceType() != null && !nsdInfo.getServiceType().isEmpty())) {
-                Log.v("RESOLVER: ", "RESOLVING NSDINFO");
                 mNsdManager.resolveService(nsdInfo, mResolveListener);
             }
         }

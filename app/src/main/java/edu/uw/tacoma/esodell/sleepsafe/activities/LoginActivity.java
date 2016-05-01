@@ -3,9 +3,10 @@ package edu.uw.tacoma.esodell.sleepsafe.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,6 +33,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +53,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+
+    private static final String TAG = "SleepSafe_LOGIN";
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -58,18 +71,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private ServerAsyncTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private SharedPreferences mSharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mSharedPref = getSharedPreferences(getString(R.string.pref_device_key), Context.MODE_PRIVATE);
+        String user = mSharedPref.getString(getString(R.string.pref_app_username), null);
+
+        if (user != null && !user.isEmpty()) {
+            loginAs(user);
+        }
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -79,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptLogin(ServerAsyncTask.ACTION_LOGIN);
                     return true;
                 }
                 return false;
@@ -90,7 +111,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptLogin(ServerAsyncTask.ACTION_LOGIN);
+            }
+        });
+
+        Button mEmailSignUpButton = (Button) findViewById(R.id.email_sign_up_button);
+        mEmailSignUpButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin(ServerAsyncTask.ACTION_REGISTER);
             }
         });
 
@@ -105,11 +134,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        String user = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(getString(R.string.pref_current_user), "");
 
-        if (!user.isEmpty()) {
-            loginAs(user);
-        }
     }
 
     private void populateAutoComplete() {
@@ -174,7 +199,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void attemptLogin(final String action) {
         if (mAuthTask != null) {
             return;
         }
@@ -216,8 +241,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask = new ServerAsyncTask(email, password);
+            mAuthTask.execute(action);
         }
     }
 
@@ -325,37 +350,91 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class ServerAsyncTask extends AsyncTask<String, Void, Boolean> {
 
+        public static final String ACTION_LOGIN = "action_login";
+        public static final String ACTION_REGISTER = "action_register";
         private final String mEmail;
         private final String mPassword;
 
-        UserLoginTask(String email, String password) {
+        ServerAsyncTask(String email, String password) {
             mEmail = email;
             mPassword = password;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        protected Boolean doInBackground(String... params) {
+            if (params.length == 0) return null;
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String loginJsonStr = null;
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                final String BASE_URL;
+                if (params[0].contains(ACTION_LOGIN)) BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/login.php?";
+                else BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/addUser.php?";
+                final String EMAIL_PARAM = "email";
+                final String PASSWORD_PARAM = "pwd";
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+                        .appendQueryParameter(EMAIL_PARAM, mEmail)
+                        .appendQueryParameter(PASSWORD_PARAM, mPassword)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) return null;
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) return null;
+
+                loginJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e(TAG, "I/O Error: ", e);
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(TAG, "Error closing stream: ", e);
+                    }
                 }
             }
 
-            // TODO: register the new account here.
-            return true;
+            try {
+                return parseDataFromJson(loginJsonStr);
+            } catch (JSONException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            return false;
+        }
+
+        private boolean parseDataFromJson(String jsonString)
+                throws JSONException {
+            final String SUCCESS = "result";
+            JSONObject loginJson = new JSONObject(jsonString);
+            return loginJson.getString(SUCCESS).contains("success");
         }
 
         @Override
