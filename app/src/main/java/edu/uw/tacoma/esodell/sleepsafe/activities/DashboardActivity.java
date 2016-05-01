@@ -1,35 +1,21 @@
 package edu.uw.tacoma.esodell.sleepsafe.activities;
 
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.DataSetObserver;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
 import edu.uw.tacoma.esodell.sleepsafe.services.MonitorSvc;
@@ -41,6 +27,11 @@ public class DashboardActivity extends AppCompatActivity {
     public String user;
     private BroadcastReceiver mReceiver;
     private Intent mService;
+    private SharedPreferences mSharedPref;
+    private TextView mDeviceName;
+    private TextView mDeviceIP;
+    private TextView mDevicePort;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +39,8 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mSharedPref = getSharedPreferences(getString(R.string.pref_device_key), Context.MODE_PRIVATE);
 
         user = getIntent().getAction();
 
@@ -85,13 +78,26 @@ public class DashboardActivity extends AppCompatActivity {
 
         start_button = (Button) findViewById(R.id.button_start);
         stop_button = (Button) findViewById(R.id.button_stop);
+        mDeviceName = (TextView) findViewById(R.id.db_device_name);
+        mDeviceIP = (TextView) findViewById(R.id.db_device_ip);
+        mDevicePort = (TextView) findViewById(R.id.db_device_port);
+
+        View deviceDisplay = findViewById(R.id.devicedb);
+        deviceDisplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), DeviceActivity.class));
+            }
+        });
 
         start_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mService = new Intent(getApplicationContext(), MonitorSvc.class);
                 mService.setAction(MonitorSvc.ACTION_START_SERVICE);
-                mService.putExtra("user", user);
+                mService.putExtra("user", mSharedPref.getString(getString(R.string.pref_app_username), "Guest"));
+                mService.putExtra("device_ip", mSharedPref.getString(getString(R.string.pref_device_ip), "0.0.0.0"));
+                mService.putExtra("device_port", mSharedPref.getInt(getString(R.string.pref_device_port), 80));
                 startService(mService);
             }
         });
@@ -159,6 +165,12 @@ public class DashboardActivity extends AppCompatActivity {
         filter.addAction("new_sample");
         filter.addAction("service_running");
         registerReceiver(mReceiver,filter);
+        String ip = mSharedPref.getString(getString(R.string.pref_device_ip), "0.0.0.0");
+        mDeviceIP.setText(ip);
+        int port = mSharedPref.getInt(getString(R.string.pref_device_port), 80);
+        mDevicePort.setText(String.valueOf(port));
+        String name = mSharedPref.getString(getString(R.string.pref_device_name), "No Device Selected");
+        mDeviceName.setText(name);
         super.onResume();
     }
 

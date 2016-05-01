@@ -4,16 +4,13 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.net.nsd.NsdManager;
 import android.os.AsyncTask;
-import android.text.format.Time;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +33,11 @@ public class MonitorSvc extends IntentService {
     public static final String ACTION_START_SERVICE = "start_svc";
     public static final String ACTION_STOP_SERVICE = "stop_svc";
 
+    private static final String REQUEST_SAMPLE = "sample";
+
     // URL of emulator server (to be replaced by device):
-    final String BASE_URL = "http://192.168.0.12:8080/";
+    private String BASE_URL = "http://192.168.1.12:80/";
+    private InetAddress mDeviceIP;
 
     public static boolean SERVICE_RUNNING = false;
 
@@ -68,6 +69,12 @@ public class MonitorSvc extends IntentService {
             final String action = intent.getAction();
 
             if (action.equals(ACTION_START_SERVICE)) {
+                final String device_ip = intent.getStringExtra("device_ip");
+                final int device_port = intent.getIntExtra("device_port", 80);
+                if (device_ip != null) {
+                    BASE_URL = "http:/" + device_ip + ":" + device_port + "/";
+                }
+                Log.v(TAG, "Resolved device info: " + device_ip);
                 startSvc(intent.getStringExtra("user"));
             }
         }
@@ -103,13 +110,13 @@ public class MonitorSvc extends IntentService {
 
         samples = new ArrayList<>();
 
-        if (user.equals("Guest")) {
+        if (user == null || user.equals("Guest")) {
             while (SERVICE_RUNNING) {
-                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
-                newSample(sample);
+//                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
+//                newSample(sample);
 
                 DeviceRequest request = new DeviceRequest();
-                request.execute("98103");
+                request.execute(REQUEST_SAMPLE);
 
 
                 try {
@@ -161,11 +168,12 @@ public class MonitorSvc extends IntentService {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
-                final String SAMPLE_PARAM = "sample";
-                final String DEV_INFO_PARAM = "DevInfo";
 
-                Uri builtUri = Uri.parse(BASE_URL + SAMPLE_PARAM);
+                if (params[0] == null) return null;
 
+                Uri builtUri = Uri.parse(BASE_URL + params[0]);
+
+                Log.v(TAG, BASE_URL);
                 URL url = new URL(builtUri.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection

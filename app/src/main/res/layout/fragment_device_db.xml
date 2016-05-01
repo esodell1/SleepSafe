@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/db_item_height"
+    android:layout_margin="@dimen/db_item_margin"
+    tools:context=".fragments.HrDbFragment"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:weightSum="1"
+    android:gravity="center"
+    android:minHeight="@dimen/db_item_height"
+    android:background="@drawable/border">
+
+    <TableRow android:gravity="center">
+        <ImageView
+            android:id="@+id/db_device_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="6dp"
+            android:layout_marginEnd="6dp"
+            android:src="@mipmap/ic_launcher" />
+
+        <TableLayout>
+            <TableRow>
+                <TextView
+                    android:id="@+id/db_device_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|start"
+
+                    android:textStyle="bold"
+                    android:textSize="@dimen/db_text_header"
+                    android:text="Device Not Found" />
+            </TableRow>
+            <LinearLayout android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Address: " />
+                <TextView
+                    android:id="@+id/db_device_ip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#0099CC"
+                    android:text="0.0.0.0" />
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Port: " />
+                <TextView
+                    android:id="@+id/db_device_port"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#0099CC"
+                    android:text="80" />
+            </LinearLayout>
+        </TableLayout>
+    </TableRow>
+
+
+
+</TableLayout>

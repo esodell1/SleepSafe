@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="start|center"
+    android:layout_gravity="center"
     android:orientation="horizontal">
 
     <ImageView
@@ -23,13 +23,18 @@
             android:id="@+id/devices_service_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center" />
+            android:gravity="center|start"
+
+            android:textStyle="bold"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:text="Device Not Found" />
 
         <TextView
             android:id="@+id/devices_service_ip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:textColor="#0099CC" />
+            android:textColor="#0099CC"
+            android:text="0.0.0.0" />
     </LinearLayout>
 </LinearLayout>

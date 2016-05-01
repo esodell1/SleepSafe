@@ -59,6 +59,14 @@
             class="edu.uw.tacoma.esodell.sleepsafe.fragments.Spo2DbFragment"
             tools:layout="@layout/fragment_spo2_db" />
 
+        <fragment
+            android:id="@+id/devicedb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/db_item_margin"
+            android:name="edu.uw.tacoma.esodell.sleepsafe.fragments.DeviceDbFragment"
+            class="edu.uw.tacoma.esodell.sleepsafe.fragments.DeviceDbFragment"
+            tools:layout="@layout/fragment_device_db" />
 
     </LinearLayout>
 
