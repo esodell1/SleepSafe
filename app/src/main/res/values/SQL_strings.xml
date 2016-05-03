@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CREATE_SAMPLE_SQL">
+    CREATE TABLE IF NOT EXISTS SampleHistory
+    (hr INTEGER, spo2 INTEGER,
+    temp INTEGER, time TEXT PRIMARY KEY)
+    </string>
+
+    <string name="DROP_SAMPLE_SQL">
+        DROP TABLE IF EXISTS SampleHistory
+    </string>
+
+</resources>

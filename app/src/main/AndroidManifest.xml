@@ -75,6 +75,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
         </activity>
+
     </application>
 
 </manifest>

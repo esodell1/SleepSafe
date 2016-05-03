@@ -114,7 +114,7 @@ public class DeviceFragment extends Fragment {
             nsdInfo.setServiceType("._http._tcp");
             nsdInfo.setPort(8080);
             try {
-                nsdInfo.setHost(InetAddress.getByName("192.168.0.12"));
+                nsdInfo.setHost(InetAddress.getByName("10.16.29.220"));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

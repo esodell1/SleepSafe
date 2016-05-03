@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import edu.uw.tacoma.esodell.sleepsafe.R;
 import edu.uw.tacoma.esodell.sleepsafe.services.MonitorSvc;
 

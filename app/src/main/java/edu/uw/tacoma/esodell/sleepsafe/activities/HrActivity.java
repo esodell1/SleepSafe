@@ -1,8 +1,11 @@
 package edu.uw.tacoma.esodell.sleepsafe.activities;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -11,11 +14,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.Utils;
+
+import java.util.ArrayList;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
 
@@ -93,10 +106,8 @@ public class HrActivity extends AppCompatActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class HrPageFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
+
+        private LineChart mHRActivity;
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public HrPageFragment() {
@@ -121,6 +132,8 @@ public class HrActivity extends AppCompatActivity {
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_hr_activity, container, false);
+                    mHRActivity = (LineChart) rootView.findViewById(R.id.chart_hr_activity);
+//                    mHRActivity = new LineChart(getContext());
                     break;
                 case 2:
                     rootView = inflater.inflate(R.layout.fragment_hr_history, container, false);
@@ -133,6 +146,66 @@ public class HrActivity extends AppCompatActivity {
                     break;
             }
             return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+                case 1:
+                    LineDataSet set1;
+                    ArrayList<Entry> yVals = new ArrayList<>();
+                    for (int i = 0; i < 20; i++) {
+                        yVals.add(new Entry(10f + (float)(Math.random() * 10), i));
+                    }
+
+                    ArrayList<String> xVals = new ArrayList<String>();
+                    for (int i = 0; i < 20; i++) {
+                        xVals.add((i) + "");
+                    }
+
+                    if(mHRActivity.getLineData() == null) {
+                        set1 = new LineDataSet(yVals, "New Stuff!!!!!!");
+                        set1.enableDashedLine(10f, 5f, 0f);
+                        set1.enableDashedHighlightLine(10f, 5f, 0f);
+                        set1.setColor(Color.BLACK);
+                        set1.setCircleColor(Color.BLACK);
+                        set1.setLineWidth(1f);
+                        set1.setCircleRadius(3f);
+                        set1.setDrawCircleHole(false);
+                        set1.setValueTextSize(9f);
+                        set1.setDrawFilled(true);
+
+                        if (Utils.getSDKInt() >= 18) {
+                            // fill drawable only supported on api level 18 and above
+                            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.border);
+                            set1.setFillDrawable(drawable);
+                        }
+                        else {
+                            set1.setFillColor(Color.BLACK);
+                        }
+
+                        ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+                        dataSets.add(set1); // add the datasets
+
+                        // create a data object with the datasets
+                        LineData data = new LineData(xVals, dataSets);
+
+                        // set data
+                        mHRActivity.setData(data);
+                    }
+
+                    break;
+                case 2:
+
+                    break;
+                case 3:
+
+                    break;
+                default:
+
+                    break;
+            }
         }
     }
 

@@ -26,6 +26,7 @@ import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
 import edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity;
+import edu.uw.tacoma.esodell.sleepsafe.helper.Sample;
 
 
 public class MonitorSvc extends IntentService {
