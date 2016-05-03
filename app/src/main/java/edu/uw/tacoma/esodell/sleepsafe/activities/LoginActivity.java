@@ -376,6 +376,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             try {
                 final String BASE_URL;
+
                 if (params[0].contains(ACTION_LOGIN)) BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/login.php?";
                 else BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/addUser.php?";
                 final String EMAIL_PARAM = "email";

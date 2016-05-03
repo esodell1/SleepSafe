@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.github.mikephil.charting.data.Entry;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -35,7 +37,18 @@ public class HistoryDBProvider {
         contentValues.put("temp", temp);
         contentValues.put("time", Calendar.getInstance().toString());
 
-        long rowId = mSQLiteDatabase.insert("Sample", null, contentValues);
+        long rowId = mSQLiteDatabase.insert(DB_TABLE, null, contentValues);
+        return rowId != -1;
+    }
+
+    public boolean insertSample(Sample sample) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("hr", sample.hr_val);
+        contentValues.put("spo2", sample.spo2_val);
+        contentValues.put("temp", sample.temp_val);
+        contentValues.put("time", Calendar.getInstance().getTimeInMillis());
+
+        long rowId = mSQLiteDatabase.insert(DB_TABLE, null, contentValues);
         return rowId != -1;
     }
 
@@ -77,11 +90,39 @@ public class HistoryDBProvider {
         return list;
     }
 
+    public List<Entry> getHRSamples() {
+
+        String[] columns = {
+                "hr", "time"
+        };
+
+        Cursor c = mSQLiteDatabase.query(
+                DB_TABLE,  // The table to query
+                columns,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                "time"                                 // The sort order
+        );
+        c.moveToFirst();
+        List<Entry> list = new ArrayList<>();
+        for (int i=0; i<c.getCount(); i++) {
+            int hr = c.getInt(0);
+            long time = c.getLong(1);
+            Entry sample = new Entry(hr, (int)time);
+            list.add(sample);
+            c.moveToNext();
+        }
+
+        return list;
+    }
+
 
     /**
      * Delete all the data from the COURSE_TABLE
      */
-    public void deleteCourses() {
+    public void deleteSamples() {
         mSQLiteDatabase.delete(DB_TABLE, null, null);
     }
 
@@ -94,8 +135,12 @@ public class HistoryDBProvider {
 
         public HistoryDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
-            CREATE_SAMPLE_SQL = context.getString(R.string.CREATE_SAMPLE_SQL);
-            DROP_SAMPLE_SQL = context.getString(R.string.DROP_SAMPLE_SQL);
+            CREATE_SAMPLE_SQL = "CREATE TABLE IF NOT EXISTS SampleHistory\n" +
+                    "    (hr INTEGER, spo2 INTEGER,\n" +
+                    "    temp INTEGER, time TEXT PRIMARY KEY)";
+                    //context.getString(R.string.CREATE_SAMPLE_SQL);
+            DROP_SAMPLE_SQL = "DROP TABLE IF EXISTS SampleHistory";
+            //context.getString(R.string.DROP_SAMPLE_SQL);
 
         }
 

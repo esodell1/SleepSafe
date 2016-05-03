@@ -26,6 +26,7 @@ import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
 import edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity;
+import edu.uw.tacoma.esodell.sleepsafe.helper.HistoryDBProvider;
 import edu.uw.tacoma.esodell.sleepsafe.helper.Sample;
 
 
@@ -109,9 +110,24 @@ public class MonitorSvc extends IntentService {
 
         startForeground(1, builder.build());
 
+
         samples = new ArrayList<>();
 
         if (user == null || user.equals("Guest")) {
+            while (SERVICE_RUNNING) {
+//                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
+//                newSample(sample);
+
+                DeviceRequest request = new DeviceRequest();
+                request.execute(REQUEST_SAMPLE);
+
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
             while (SERVICE_RUNNING) {
 //                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
 //                newSample(sample);
@@ -133,6 +149,9 @@ public class MonitorSvc extends IntentService {
     private void newSample(Sample sample) {
         // Local store of sample
         samples.add(sample);
+
+        HistoryDBProvider dbProvider = new HistoryDBProvider(this);
+        dbProvider.insertSample(sample);
 
         // Broadcast new sample
         Intent broadcast = new Intent();

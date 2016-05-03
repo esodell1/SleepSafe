@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -29,8 +30,10 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
+import edu.uw.tacoma.esodell.sleepsafe.helper.HistoryDBProvider;
 
 public class HrActivity extends AppCompatActivity {
 
@@ -108,6 +111,7 @@ public class HrActivity extends AppCompatActivity {
     public static class HrPageFragment extends Fragment {
 
         private LineChart mHRActivity;
+        private HistoryDBProvider mDB;
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public HrPageFragment() {
@@ -133,7 +137,7 @@ public class HrActivity extends AppCompatActivity {
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_hr_activity, container, false);
                     mHRActivity = (LineChart) rootView.findViewById(R.id.chart_hr_activity);
-//                    mHRActivity = new LineChart(getContext());
+                    mDB = new HistoryDBProvider(this.getContext());
                     break;
                 case 2:
                     rootView = inflater.inflate(R.layout.fragment_hr_history, container, false);
@@ -154,27 +158,35 @@ public class HrActivity extends AppCompatActivity {
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     LineDataSet set1;
-                    ArrayList<Entry> yVals = new ArrayList<>();
-                    for (int i = 0; i < 20; i++) {
-                        yVals.add(new Entry(10f + (float)(Math.random() * 10), i));
-                    }
+                    ArrayList<Entry> yVals = (ArrayList<Entry>) mDB.getHRSamples();
 
                     ArrayList<String> xVals = new ArrayList<String>();
-                    for (int i = 0; i < 20; i++) {
+                    for (int i = 0; i < yVals.size(); i++) {
                         xVals.add((i) + "");
+                        yVals.get(i).setXIndex(i);
                     }
 
+                    mHRActivity.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    mHRActivity.setDescription("");
+                    mHRActivity.setDrawGridBackground(false);
+                    mHRActivity.getLegend().setEnabled(false);
+                    mHRActivity.animateXY(2000, 2000);
+
+
                     if(mHRActivity.getLineData() == null) {
-                        set1 = new LineDataSet(yVals, "New Stuff!!!!!!");
-                        set1.enableDashedLine(10f, 5f, 0f);
+                        set1 = new LineDataSet(yVals, "Heart Rate");
+                        //set1.enableDashedLine(10f, 5f, 0f);
                         set1.enableDashedHighlightLine(10f, 5f, 0f);
-                        set1.setColor(Color.BLACK);
-                        set1.setCircleColor(Color.BLACK);
-                        set1.setLineWidth(1f);
+                        set1.setColor(getResources().getColor(R.color.colorPrimary));
+                        set1.setCircleColor(Color.WHITE);
+                        set1.setLineWidth(3f);
                         set1.setCircleRadius(3f);
-                        set1.setDrawCircleHole(false);
-                        set1.setValueTextSize(9f);
-                        set1.setDrawFilled(true);
+                        set1.setDrawCircleHole(true);
+                        set1.setDrawValues(false);
+//                        set1.setValueTextSize(9f);
+//                        set1.setValueTextColor(Color.RED);
+                        set1.setDrawCubic(true);
+
 
                         if (Utils.getSDKInt() >= 18) {
                             // fill drawable only supported on api level 18 and above
