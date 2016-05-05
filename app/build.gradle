@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.0 rc3"
 
     defaultConfig {
-        applicationId "edu.uw.tacoma.esodell.sleepsafe"
+        applicationId "com.sleepsafe.iot.devices.sleepsafe"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1

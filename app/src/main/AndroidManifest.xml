@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.uw.tacoma.esodell.sleepsafe">
+    package="com.sleepsafe.iot.devices.sleepsafe">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.activities.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -25,20 +25,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.DashboardActivity"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity"
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".activities.DashboardActivity">
+            android:parentActivityName="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
+                android:value="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity" />
         </activity>
 
         <service
-            android:name=".services.MonitorSvc"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.services.MonitorSvc"
             android:exported="false" />
 
         <!-- <activity -->
@@ -49,31 +49,31 @@
 
         <!-- </activity> -->
         <activity
-            android:name=".activities.Spo2Activity"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.activities.Spo2Activity"
             android:label="@string/title_activity_spo2"
-            android:parentActivityName=".activities.DashboardActivity"
+            android:parentActivityName="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
+                android:value="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity" />
         </activity>
         <activity
-            android:name=".activities.HrActivity"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.activities.HrActivity"
             android:label="@string/title_activity_hr"
-            android:parentActivityName=".activities.DashboardActivity"
+            android:parentActivityName="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
+                android:value="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity" />
         </activity>
         <activity
-            android:name=".activities.DeviceActivity"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.activities.DeviceActivity"
             android:label="@string/title_activity_device"
-            android:parentActivityName=".activities.DashboardActivity"
+            android:parentActivityName="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity" />
+                android:value="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity" />
         </activity>
 
     </application>

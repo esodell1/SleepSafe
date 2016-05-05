@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity">
+    tools:context="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"

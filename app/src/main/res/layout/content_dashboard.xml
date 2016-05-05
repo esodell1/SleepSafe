@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity"
+    tools:context="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity"
     tools:showIn="@layout/activity_dashboard">
 
     <LinearLayout
@@ -46,8 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/db_item_margin"
-            android:name="edu.uw.tacoma.esodell.sleepsafe.fragments.HrDbFragment"
-            class="edu.uw.tacoma.esodell.sleepsafe.fragments.HrDbFragment"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.fragments.HrDbFragment"
+            class="com.sleepsafe.iot.devices.sleepsafe.fragments.HrDbFragment"
             tools:layout="@layout/fragment_hr_db" />
 
         <fragment
@@ -55,8 +55,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/db_item_margin"
-            android:name="edu.uw.tacoma.esodell.sleepsafe.fragments.Spo2DbFragment"
-            class="edu.uw.tacoma.esodell.sleepsafe.fragments.Spo2DbFragment"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.fragments.Spo2DbFragment"
+            class="com.sleepsafe.iot.devices.sleepsafe.fragments.Spo2DbFragment"
             tools:layout="@layout/fragment_spo2_db" />
 
         <fragment
@@ -64,8 +64,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/db_item_margin"
-            android:name="edu.uw.tacoma.esodell.sleepsafe.fragments.DeviceDbFragment"
-            class="edu.uw.tacoma.esodell.sleepsafe.fragments.DeviceDbFragment"
+            android:name="com.sleepsafe.iot.devices.sleepsafe.fragments.DeviceDbFragment"
+            class="com.sleepsafe.iot.devices.sleepsafe.fragments.DeviceDbFragment"
             tools:layout="@layout/fragment_device_db" />
 
     </LinearLayout>

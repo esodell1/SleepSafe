@@ -10,13 +10,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.uw.tacoma.esodell.sleepsafe.activities.DeviceActivity"
+    tools:context="com.sleepsafe.iot.devices.sleepsafe.activities.DeviceActivity"
     tools:showIn="@layout/activity_device">
 
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="edu.uw.tacoma.esodell.sleepsafe.fragments.DeviceFragment"
+        android:name="com.sleepsafe.iot.devices.sleepsafe.fragments.DeviceFragment"
         android:id="@+id/fragment"
         android:layout_gravity="center|start"
         tools:layout="@layout/fragment_device" />
