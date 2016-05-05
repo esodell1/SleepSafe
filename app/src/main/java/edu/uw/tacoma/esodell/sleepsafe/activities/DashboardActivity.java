@@ -22,17 +22,25 @@ import java.util.Locale;
 import edu.uw.tacoma.esodell.sleepsafe.R;
 import edu.uw.tacoma.esodell.sleepsafe.services.MonitorSvc;
 
+/**
+ * This class implements the main view Dashboard for the SleepSafe app.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class DashboardActivity extends AppCompatActivity {
+
+    public String user;
 
     private Button start_button;
     private Button stop_button;
-    public String user;
-    private BroadcastReceiver mReceiver;
-    private Intent mService;
-    private SharedPreferences mSharedPref;
     private TextView mDeviceName;
     private TextView mDeviceIP;
     private TextView mDevicePort;
+    private Intent mService;
+    private BroadcastReceiver mReceiver;
+    private SharedPreferences mSharedPref;
 
 
     @Override
@@ -42,9 +50,16 @@ public class DashboardActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mSharedPref = getSharedPreferences(getString(R.string.pref_device_key), Context.MODE_PRIVATE);
+        // Define SharedPreferences object and get user name
+        mSharedPref = getPreferences(Context.MODE_PRIVATE);
+        user = mSharedPref.getString(getString(R.string.pref_app_username), "Guest");
 
-        user = getIntent().getAction();
+        // Bind actions to view objects
+        start_button = (Button) findViewById(R.id.button_start);
+        stop_button = (Button) findViewById(R.id.button_stop);
+        mDeviceName = (TextView) findViewById(R.id.db_device_name);
+        mDeviceIP = (TextView) findViewById(R.id.db_device_ip);
+        mDevicePort = (TextView) findViewById(R.id.db_device_port);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -78,19 +93,17 @@ public class DashboardActivity extends AppCompatActivity {
             });
         }
 
-        start_button = (Button) findViewById(R.id.button_start);
-        stop_button = (Button) findViewById(R.id.button_stop);
-        mDeviceName = (TextView) findViewById(R.id.db_device_name);
-        mDeviceIP = (TextView) findViewById(R.id.db_device_ip);
-        mDevicePort = (TextView) findViewById(R.id.db_device_port);
+
 
         View deviceDisplay = findViewById(R.id.devicedb);
-        deviceDisplay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), DeviceActivity.class));
-            }
-        });
+        if (deviceDisplay != null) {
+            deviceDisplay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getApplicationContext(), DeviceActivity.class));
+                }
+            });
+        }
 
         start_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +128,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+        // This defines the handling of updates triggered by the monitor service:
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -142,19 +156,14 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_dashboard, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         } else if (id == R.id.action_logout) {

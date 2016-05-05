@@ -1,10 +1,18 @@
 package edu.uw.tacoma.esodell.sleepsafe.helper;
 
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+/**
+ * This class describes the model of a discrete sample, taken from the SleepSafe device. This
+ * includes heart rate, blood oxygen saturation, and surface temperature, as well as a time stamp
+ * for organization.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class Sample {
     public int hr_val;
     public int spo2_val;
@@ -16,13 +24,6 @@ public class Sample {
         this.spo2_val = spo2;
         this.temp_val = temp;
         this.timestamp = Calendar.getInstance();
-    }
-
-    public Sample(int hr, int spo2, int temp, Calendar time) {
-        this.hr_val = hr;
-        this.spo2_val = spo2;
-        this.temp_val = temp;
-        this.timestamp = time;
     }
 
     public Sample(int hr, int spo2, int temp, String timeString) {

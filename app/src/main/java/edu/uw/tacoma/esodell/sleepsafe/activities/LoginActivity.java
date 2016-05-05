@@ -44,13 +44,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
- * A login screen that offers login via email/password.
+ * This class implements the login view activity. This allows a user to authenticate
+ * with a remote server, given an email and password as credentials, and save data
+ * within their local profile. It also allows the login of a Guest with no credentials
+ * to view the functionality of the app.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
@@ -62,13 +71,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final int REQUEST_READ_CONTACTS = 0;
 
     /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private ServerAsyncTask mAuthTask = null;
@@ -78,14 +80,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    private SharedPreferences mSharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mSharedPref = getSharedPreferences(getString(R.string.pref_device_key), Context.MODE_PRIVATE);
-        String user = mSharedPref.getString(getString(R.string.pref_app_username), null);
+        String user = getPreferences(Context.MODE_PRIVATE).getString(getString(R.string.pref_app_username), null);
 
         if (user != null && !user.isEmpty()) {
             loginAs(user);
@@ -108,28 +108,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin(ServerAsyncTask.ACTION_LOGIN);
-            }
-        });
+        if (mEmailSignInButton != null) {
+            mEmailSignInButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    attemptLogin(ServerAsyncTask.ACTION_LOGIN);
+                }
+            });
+        }
 
         Button mEmailSignUpButton = (Button) findViewById(R.id.email_sign_up_button);
-        mEmailSignUpButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin(ServerAsyncTask.ACTION_REGISTER);
-            }
-        });
+        if (mEmailSignUpButton != null) {
+            mEmailSignUpButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    attemptLogin(ServerAsyncTask.ACTION_REGISTER);
+                }
+            });
+        }
 
         Button mGuestSignInButton = (Button) findViewById(R.id.guest_sign_in_button);
-        mGuestSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginAs(null);
-            }
-        });
+        if (mGuestSignInButton != null) {
+            mGuestSignInButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loginAs(null);
+                }
+            });
+        }
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -145,6 +151,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         getLoaderManager().initLoader(0, null, this);
     }
 
+    /**
+     * Requests permission to access contacts for type completion of the login email field.
+     *
+     * @return true if allowed, false otherwise
+     */
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -180,17 +191,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    /**
+     * This methods stores authenticated login credentials as the current user and starts the
+     * Dashboard activity.
+     *
+     * @param email The current user
+     */
     private void loginAs(String email) {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
         Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
-        if (email == null || email.isEmpty()) {
-            intent.setAction("Guest");
-        } else {
-            intent.setAction(email);
-        }
+        getPreferences(Context.MODE_PRIVATE).edit().putString(getString(R.string.pref_app_username), email).apply();
         startActivity(intent);
     }
 
@@ -246,13 +259,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    /**
+     * Validates the email field locally.
+     *
+     * Note: This is not RFC822 compliant validation.
+     * @param email The email to validate
+     * @return true if the param is a valid email, false otherwise
+     */
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
+        return Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+                Pattern.CASE_INSENSITIVE).matcher(email).find();
     }
 
+    /**
+     * Validates the password field locally, to a string longer than 4 characters.
+     * @param password The password to validate
+     * @return true if the param is a valid password, flase otherwise
+     */
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -326,6 +350,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
+    /**
+     * This method adds a list of strings to the email field auto complete adapter.
+     *
+     * @param emailAddressCollection List to add to the email field adapter
+     */
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
@@ -334,7 +363,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mEmailView.setAdapter(adapter);
     }
-
 
     private interface ProfileQuery {
         String[] PROJECTION = {
@@ -345,6 +373,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
     }
+
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -377,8 +406,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             try {
                 final String BASE_URL;
 
-                if (params[0].contains(ACTION_LOGIN)) BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/login.php?";
-                else BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/addUser.php?";
+                if (params[0].contains(ACTION_LOGIN))
+                    BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/login.php?";
+                else
+                    BASE_URL = "http://cssgate.insttech.washington.edu/~esodell/Android/addUser.php?";
                 final String EMAIL_PARAM = "email";
                 final String PASSWORD_PARAM = "pwd";
 
@@ -394,14 +425,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) return null;
 
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) return null;

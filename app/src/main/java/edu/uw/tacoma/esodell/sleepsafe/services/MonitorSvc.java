@@ -29,19 +29,25 @@ import edu.uw.tacoma.esodell.sleepsafe.activities.DashboardActivity;
 import edu.uw.tacoma.esodell.sleepsafe.helper.HistoryDBProvider;
 import edu.uw.tacoma.esodell.sleepsafe.helper.Sample;
 
-
+/**
+ * This class implements the communication service that handles requests to and from the SleepSafe
+ * wearable device. This service will run in the foreground, continually poll the device, and
+ * monitor set points of alarms that will actuate on user specified conditions.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class MonitorSvc extends IntentService {
-    private static final String TAG = "SleepSafeMonitorSvc";
+    public static boolean SERVICE_RUNNING = false;
     public static final String ACTION_START_SERVICE = "start_svc";
     public static final String ACTION_STOP_SERVICE = "stop_svc";
-
+    private static final String TAG = "SleepSafeMonitorSvc";
     private static final String REQUEST_SAMPLE = "sample";
 
     // URL of emulator server (to be replaced by device):
     private String BASE_URL = "http://192.168.1.12:80/";
     private InetAddress mDeviceIP;
-
-    public static boolean SERVICE_RUNNING = false;
 
     private String user = null;
     private BroadcastReceiver mReceiver;
@@ -54,6 +60,8 @@ public class MonitorSvc extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+        // Attach a broadcast receiver to this service to listen for
+        // a stop request:
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -71,6 +79,7 @@ public class MonitorSvc extends IntentService {
             final String action = intent.getAction();
 
             if (action.equals(ACTION_START_SERVICE)) {
+                // Retrieve the network address and port from the calling Intent:
                 final String device_ip = intent.getStringExtra("device_ip");
                 final int device_port = intent.getIntExtra("device_port", 80);
                 if (device_ip != null) {
@@ -88,11 +97,14 @@ public class MonitorSvc extends IntentService {
         super.onDestroy();
     }
 
+    /**
+     * Begins the service.
+     * @param user the user for which the service is running
+     */
     private void startSvc(String user) {
         this.user = user;
         SERVICE_RUNNING = true;
         Log.v(TAG, "Service started for user: " + user);
-
 
         Intent broadcast = new Intent();
         broadcast.setAction("service_running");
@@ -115,11 +127,11 @@ public class MonitorSvc extends IntentService {
 
         if (user == null || user.equals("Guest")) {
             while (SERVICE_RUNNING) {
-//                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
-//                newSample(sample);
+                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
+                newSample(sample);
 
-                DeviceRequest request = new DeviceRequest();
-                request.execute(REQUEST_SAMPLE);
+//                DeviceRequest request = new DeviceRequest();
+//                request.execute(REQUEST_SAMPLE);
 
                 try {
                     Thread.sleep(4000);
@@ -146,6 +158,10 @@ public class MonitorSvc extends IntentService {
 
     }
 
+    /**
+     * This method broadcasts a new sample being retrieved to the database and the Dashboard.
+     * @param sample The Sample object to broadcast
+     */
     private void newSample(Sample sample) {
         // Local store of sample
         samples.add(sample);
@@ -162,13 +178,18 @@ public class MonitorSvc extends IntentService {
         sendBroadcast(broadcast);
     }
 
+    /**
+     * Stops the service. Should only be called by onDestroy().
+     */
     private void stopSvc() {
         SERVICE_RUNNING = false;
         unregisterReceiver(mReceiver);
         Log.v(TAG, "Service terminated for user: " + user);
     }
 
-
+    /**
+     * This class provides an asynchronous HTTP request helper so the service may query the device.
+     */
     private class DeviceRequest extends AsyncTask<String, Void, Sample> {
 
         @Override
@@ -185,10 +206,6 @@ public class MonitorSvc extends IntentService {
             String jsonStr = null;
 
             try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at OWM's forecast API page, at
-                // http://openweathermap.org/API#forecast
-
                 if (params[0] == null) return null;
 
                 Uri builtUri = Uri.parse(BASE_URL + params[0]);
@@ -196,14 +213,14 @@ public class MonitorSvc extends IntentService {
                 Log.v(TAG, BASE_URL);
                 URL url = new URL(builtUri.toString());
 
-                // Create the request to OpenWeatherMap, and open the connection
+                // Create the request to the device, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) {
                     // Nothing to do.
                     return null;
@@ -212,10 +229,7 @@ public class MonitorSvc extends IntentService {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {
@@ -225,8 +239,6 @@ public class MonitorSvc extends IntentService {
                 jsonStr = buffer.toString();
             } catch (IOException e) {
                 Log.e(TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
                 return null;
             } finally {
                 if (urlConnection != null) {

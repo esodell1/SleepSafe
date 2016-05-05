@@ -15,6 +15,15 @@ import java.util.List;
 
 import edu.uw.tacoma.esodell.sleepsafe.R;
 
+/**
+ * This class implements the historical database storage for the app. This class will instantiate
+ * and interact with the SQLite database internal to Android to maintain the persistant storage
+ * requirements of this app.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class HistoryDBProvider {
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "SleepSafeHistory.db";
@@ -29,7 +38,13 @@ public class HistoryDBProvider {
         mSQLiteDatabase = mHistoryDBHelper.getWritableDatabase();
     }
 
-
+    /**
+     * Adds a sample to the database given the individual parameters.
+     * @param hr The HR value
+     * @param spo2 The SpO2 value
+     * @param temp The temperature value
+     * @return true if the sample was successfully added to the database, false otherwise
+     */
     public boolean insertSample(int hr, int spo2, int temp) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("hr", hr);
@@ -41,6 +56,11 @@ public class HistoryDBProvider {
         return rowId != -1;
     }
 
+    /**
+     * Adds a sample to the database given the Sample object.
+     * @param sample The Sample object to store
+     * @return true if the sample was successfully added to the database, false otherwise
+     */
     public boolean insertSample(Sample sample) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("hr", sample.hr_val);
@@ -52,6 +72,9 @@ public class HistoryDBProvider {
         return rowId != -1;
     }
 
+    /**
+     * Closes the database.
+     */
     public void closeDB() {
         mSQLiteDatabase.close();
     }

@@ -15,6 +15,9 @@ import android.view.ViewGroup;
 /**
  * A {@link android.preference.PreferenceActivity} which implements and proxies the necessary calls
  * to be used with AppCompat.
+ *
+ * Unmodified from Android Studio template.
+ * 5/4/2016
  */
 public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 

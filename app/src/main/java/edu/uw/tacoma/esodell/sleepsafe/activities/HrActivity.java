@@ -35,6 +35,13 @@ import java.util.List;
 import edu.uw.tacoma.esodell.sleepsafe.R;
 import edu.uw.tacoma.esodell.sleepsafe.helper.HistoryDBProvider;
 
+/**
+ * This class implements the main view for the heart rate display activity.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class HrActivity extends AppCompatActivity {
 
     /**
@@ -66,19 +73,25 @@ public class HrActivity extends AppCompatActivity {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        if (mViewPager != null) {
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+        }
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        if (tabLayout != null) {
+            tabLayout.setupWithViewPager(mViewPager);
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+        }
 
     }
 
@@ -106,7 +119,7 @@ public class HrActivity extends AppCompatActivity {
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * A fragment containing a a paged view.
      */
     public static class HrPageFragment extends Fragment {
 
@@ -133,6 +146,7 @@ public class HrActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView;
+            // Inflate different views depending on the section
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_hr_activity, container, false);
@@ -157,6 +171,7 @@ public class HrActivity extends AppCompatActivity {
             super.onResume();
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
+                    // Populate graph data and display
                     LineDataSet set1;
                     ArrayList<Entry> yVals = (ArrayList<Entry>) mDB.getHRSamples();
 
@@ -175,7 +190,6 @@ public class HrActivity extends AppCompatActivity {
 
                     if(mHRActivity.getLineData() == null) {
                         set1 = new LineDataSet(yVals, "Heart Rate");
-                        //set1.enableDashedLine(10f, 5f, 0f);
                         set1.enableDashedHighlightLine(10f, 5f, 0f);
                         set1.setColor(getResources().getColor(R.color.colorPrimary));
                         set1.setCircleColor(Color.WHITE);
@@ -183,8 +197,6 @@ public class HrActivity extends AppCompatActivity {
                         set1.setCircleRadius(3f);
                         set1.setDrawCircleHole(true);
                         set1.setDrawValues(false);
-//                        set1.setValueTextSize(9f);
-//                        set1.setValueTextColor(Color.RED);
                         set1.setDrawCubic(true);
 
 
@@ -223,7 +235,7 @@ public class HrActivity extends AppCompatActivity {
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
+     * one of the sections.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 

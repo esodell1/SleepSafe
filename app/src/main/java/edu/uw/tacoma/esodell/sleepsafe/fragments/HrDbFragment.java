@@ -12,6 +12,10 @@ import edu.uw.tacoma.esodell.sleepsafe.R;
 
 /**
  * A simple {@link Fragment} subclass.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
  */
 public class HrDbFragment extends Fragment {
 
