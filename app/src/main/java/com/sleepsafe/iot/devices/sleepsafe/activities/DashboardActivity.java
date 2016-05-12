@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +30,6 @@ import com.sleepsafe.iot.devices.sleepsafe.services.MonitorSvc;
 public class DashboardActivity extends AppCompatActivity {
 
     public String user;
-
     private Button start_button;
     private Button stop_button;
     private TextView mDeviceName;
@@ -177,11 +177,14 @@ public class DashboardActivity extends AppCompatActivity {
         filter.addAction("service_running");
         registerReceiver(mReceiver,filter);
         String ip = mSharedPref.getString(getString(R.string.pref_device_ip), "0.0.0.0");
+        Log.v("Dashboard", "IP found: " + ip);
         mDeviceIP.setText(ip);
         int port = mSharedPref.getInt(getString(R.string.pref_device_port), 80);
         mDevicePort.setText(String.valueOf(port));
+        Log.v("Dashboard", "Port found: " + port);
         String name = mSharedPref.getString(getString(R.string.pref_device_name), "No Device Selected");
         mDeviceName.setText(name);
+        Log.v("Dashboard", "Name found: " + name);
         super.onResume();
     }
 

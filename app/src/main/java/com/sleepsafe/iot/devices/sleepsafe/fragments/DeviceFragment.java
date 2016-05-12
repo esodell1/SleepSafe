@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -194,7 +195,8 @@ public class DeviceFragment extends Fragment {
         public NsdHelper(Context context) {
             mContext = context;
             mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
-            mDevicePref = getActivity().getSharedPreferences(getString(R.string.pref_device_key), Context.MODE_PRIVATE);
+            mDevicePref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+            //mDevicePref = getActivity().getPreferences(Context.MODE_PRIVATE);
         }
 
         /**
@@ -290,11 +292,7 @@ public class DeviceFragment extends Fragment {
                     mDevicePref.edit().putString(getString(R.string.pref_device_ip), serviceInfo.getHost().toString()).apply();
                     mDevicePref.edit().putInt(getString(R.string.pref_device_port), serviceInfo.getPort()).apply();
                     mDevicePref.edit().putString(getString(R.string.pref_device_name), serviceInfo.getServiceName()).apply();
-                    Log.v(TAG, serviceInfo.toString());
-                    if (serviceInfo.getServiceName().equals(mServiceName)) {
-                        Log.d(TAG, "Same IP.");
-                        return;
-                    }
+                    Log.v(TAG, "Resolve succeeded: " + serviceInfo.toString());
                     mService = serviceInfo;
                 }
             };

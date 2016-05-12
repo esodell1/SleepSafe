@@ -64,6 +64,7 @@ public class HrActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -182,7 +183,7 @@ public class HrActivity extends AppCompatActivity {
                     mHRActivity.setDescription("");
                     mHRActivity.setDrawGridBackground(false);
                     mHRActivity.getLegend().setEnabled(false);
-                    mHRActivity.animateXY(2000, 2000);
+                    mHRActivity.animateXY(1000, 1000);
 
 
                     if(mHRActivity.getLineData() == null) {

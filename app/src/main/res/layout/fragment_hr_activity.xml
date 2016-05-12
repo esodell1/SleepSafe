@@ -9,15 +9,13 @@
         android:id="@+id/chart_hr_activity"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4" />
+        android:layout_weight="1" />
 
-    <TableLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_weight="1"
         android:layout_height="@dimen/db_item_height"
         android:layout_margin="@dimen/db_item_margin"
-        android:orientation="horizontal"
-        android:weightSum="1"
+        android:orientation="vertical"
         android:gravity="center"
         android:minHeight="@dimen/db_item_height"
         android:background="@drawable/border">
@@ -72,7 +70,7 @@
         </LinearLayout>
 
 
-    </TableLayout>
+    </LinearLayout>
 
 
 

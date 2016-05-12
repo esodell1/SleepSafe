@@ -197,8 +197,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private void loginAs(String email) {
         // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
+        if (mEmailView != null) mEmailView.setError(null);
+        if (mPasswordView != null) mPasswordView.setError(null);
 
         Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
         getPreferences(Context.MODE_PRIVATE).edit().putString(getString(R.string.pref_app_username), email).apply();
