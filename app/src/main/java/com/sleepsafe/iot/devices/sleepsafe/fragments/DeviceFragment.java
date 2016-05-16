@@ -195,8 +195,8 @@ public class DeviceFragment extends Fragment {
         public NsdHelper(Context context) {
             mContext = context;
             mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
-            mDevicePref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
-            //mDevicePref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            //mDevicePref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+            mDevicePref = getActivity().getPreferences(Context.MODE_PRIVATE);
         }
 
         /**
@@ -283,15 +283,19 @@ public class DeviceFragment extends Fragment {
                 @Override
                 public void onResolveFailed(android.net.nsd.NsdServiceInfo serviceInfo, int errorCode) {
                     Log.e(TAG, "Resolve failed" + errorCode);
+                    mDevicePref = getContext().getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
                     mDevicePref.edit().putString(getString(R.string.pref_device_ip), serviceInfo.getHost().toString()).apply();
                     mDevicePref.edit().putInt(getString(R.string.pref_device_port), serviceInfo.getPort()).apply();
                     mDevicePref.edit().putString(getString(R.string.pref_device_name), serviceInfo.getServiceName()).apply();
+                    Log.v(TAG, "Resolve failed SHARED PREF: " + mDevicePref.getAll().keySet());
                 }
                 @Override
                 public void onServiceResolved(android.net.nsd.NsdServiceInfo serviceInfo) {
+                    mDevicePref = getContext().getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
                     mDevicePref.edit().putString(getString(R.string.pref_device_ip), serviceInfo.getHost().toString()).apply();
                     mDevicePref.edit().putInt(getString(R.string.pref_device_port), serviceInfo.getPort()).apply();
                     mDevicePref.edit().putString(getString(R.string.pref_device_name), serviceInfo.getServiceName()).apply();
+                    Log.v(TAG, "Resolve success SHARED PREF: " + mDevicePref.getAll().keySet());
                     Log.v(TAG, "Resolve succeeded: " + serviceInfo.toString());
                     mService = serviceInfo;
                 }

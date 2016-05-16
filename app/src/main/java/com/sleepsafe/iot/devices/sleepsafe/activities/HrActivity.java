@@ -1,11 +1,14 @@
 package com.sleepsafe.iot.devices.sleepsafe.activities;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -14,11 +17,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -28,8 +35,13 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
+import com.sleepsafe.iot.devices.sleepsafe.fragments.HrActivityFragment;
+import com.sleepsafe.iot.devices.sleepsafe.fragments.HrAlarmFragment;
+import com.sleepsafe.iot.devices.sleepsafe.fragments.HrHistoryFragment;
+import com.sleepsafe.iot.devices.sleepsafe.helper.Alarm;
 import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 
 /**
@@ -40,6 +52,8 @@ import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
  * @version 1.0
  */
 public class HrActivity extends AppCompatActivity {
+
+    private AlarmListAdapter mAlarmAdapter;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -65,31 +79,24 @@ public class HrActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mAlarmAdapter = new AlarmListAdapter(this, R.layout.alarm_list_item, new ArrayList<Alarm>());
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (ViewPager) findViewById(R.id.container_hr);
         if (mViewPager != null) {
             mViewPager.setAdapter(mSectionsPagerAdapter);
         }
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs_hr);
         if (tabLayout != null) {
             tabLayout.setupWithViewPager(mViewPager);
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
-        }
+
 
     }
 
@@ -117,121 +124,6 @@ public class HrActivity extends AppCompatActivity {
     }
 
     /**
-     * A fragment containing a a paged view.
-     */
-    public static class HrPageFragment extends Fragment {
-
-        private LineChart mHRActivity;
-        private HistoryDBProvider mDB;
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public HrPageFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static HrPageFragment newInstance(int sectionNumber) {
-            HrPageFragment fragment = new HrPageFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView;
-            // Inflate different views depending on the section
-            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
-                case 1:
-                    rootView = inflater.inflate(R.layout.fragment_hr_activity, container, false);
-                    mHRActivity = (LineChart) rootView.findViewById(R.id.chart_hr_activity);
-                    mDB = new HistoryDBProvider(this.getContext());
-                    break;
-                case 2:
-                    rootView = inflater.inflate(R.layout.fragment_hr_history, container, false);
-                    break;
-                case 3:
-                    rootView = inflater.inflate(R.layout.fragment_hr_alarms, container, false);
-                    break;
-                default:
-                    rootView = inflater.inflate(R.layout.fragment_hr, container, false);
-                    break;
-            }
-            return rootView;
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
-                case 1:
-                    // Populate graph data and display
-                    LineDataSet set1;
-                    ArrayList<Entry> yVals = (ArrayList<Entry>) mDB.getHRSamples();
-
-                    ArrayList<String> xVals = new ArrayList<String>();
-                    for (int i = 0; i < yVals.size(); i++) {
-                        xVals.add((i) + "");
-                        yVals.get(i).setXIndex(i);
-                    }
-
-                    mHRActivity.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    mHRActivity.setDescription("");
-                    mHRActivity.setDrawGridBackground(false);
-                    mHRActivity.getLegend().setEnabled(false);
-                    mHRActivity.animateXY(1000, 1000);
-
-
-                    if(mHRActivity.getLineData() == null) {
-                        set1 = new LineDataSet(yVals, "Heart Rate");
-                        set1.enableDashedHighlightLine(10f, 5f, 0f);
-                        set1.setColor(getResources().getColor(R.color.colorPrimary));
-                        set1.setCircleColor(Color.WHITE);
-                        set1.setLineWidth(3f);
-                        set1.setCircleRadius(3f);
-                        set1.setDrawCircleHole(true);
-                        set1.setDrawValues(false);
-                        set1.setDrawCubic(true);
-
-
-                        if (Utils.getSDKInt() >= 18) {
-                            // fill drawable only supported on api level 18 and above
-                            Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.border);
-                            set1.setFillDrawable(drawable);
-                        }
-                        else {
-                            set1.setFillColor(Color.BLACK);
-                        }
-
-                        ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
-                        dataSets.add(set1); // add the datasets
-
-                        // create a data object with the datasets
-                        LineData data = new LineData(xVals, dataSets);
-
-                        // set data
-                        mHRActivity.setData(data);
-                    }
-
-                    break;
-                case 2:
-
-                    break;
-                case 3:
-
-                    break;
-                default:
-
-                    break;
-            }
-        }
-    }
-
-    /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections.
      */
@@ -243,14 +135,25 @@ public class HrActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a HrPageFragment (defined as a static inner class below).
-            return HrPageFragment.newInstance(position + 1);
+            Fragment fragment;
+            switch (position) {
+                case 0:
+                    fragment = new HrActivityFragment();
+                    break;
+                case 1:
+                    fragment = new HrHistoryFragment();
+                    break;
+                case 2:
+                    fragment = new HrAlarmFragment();
+                    break;
+                default:
+                    throw new IllegalArgumentException("position " + position + " is not valid.");
+            }
+            return fragment;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return 3;
         }
 
@@ -265,6 +168,13 @@ public class HrActivity extends AppCompatActivity {
                     return "Alarms";
             }
             return null;
+        }
+    }
+
+    public class AlarmListAdapter extends ArrayAdapter<Alarm> {
+
+        public AlarmListAdapter(Context context, int resource, List<Alarm> objects) {
+            super(context, resource, objects);
         }
     }
 }

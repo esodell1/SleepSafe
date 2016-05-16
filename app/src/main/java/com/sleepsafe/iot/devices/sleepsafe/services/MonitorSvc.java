@@ -212,8 +212,10 @@ public class MonitorSvc extends IntentService {
 
                 Uri builtUri = Uri.parse(BASE_URL + params[0]);
 
-                Log.v(TAG, BASE_URL);
+                Log.v(TAG, "BASE_URL: " + BASE_URL);
+
                 URL url = new URL(builtUri.toString());
+                Log.v(TAG, "URI: " + url.toString());
 
                 // Create the request to the device, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();

@@ -68,6 +68,11 @@
         <item>-1</item>
     </string-array>
 
+    <string-array name="alarm_add">
+        <item>Greater Than</item>
+        <item>Less Than</item>
+    </string-array>
+
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
     <!-- Example settings for Notifications -->
@@ -103,6 +108,7 @@
     <string name="title_activity_device">Select a Device</string>
     <string name="device_name">device_name</string>
     <string name="action_logout">Logout</string>
+    <string name="pref_name">sleepsafe_pref_data</string>
 
 
 </resources>

@@ -48,8 +48,7 @@ public class DashboardActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Define SharedPreferences object and get user name
-        mSharedPref = getPreferences(Context.MODE_PRIVATE);
-        user = mSharedPref.getString(getString(R.string.pref_app_username), "Guest");
+        user = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE).getString(getString(R.string.pref_app_username), "Guest");
 
         // Bind actions to view objects
         start_button = (Button) findViewById(R.id.button_start);
@@ -172,6 +171,8 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        mSharedPref = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
+        Log.v("Dashboard", "onResume SHARED PREF: " + mSharedPref.getAll().keySet());
         IntentFilter filter = new IntentFilter();
         filter.addAction("new_sample");
         filter.addAction("service_running");
