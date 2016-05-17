@@ -46,7 +46,6 @@ public class HrAlarmFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView;
-
         rootView = inflater.inflate(R.layout.fragment_alarms, container, false);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.hr_add_alarm);
         final ListView alarmList = (ListView) rootView.findViewById(R.id.alarms_hr_list);

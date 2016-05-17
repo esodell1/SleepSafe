@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -40,12 +41,21 @@ public class AlarmListAdapter extends ArrayAdapter<Alarm> {
         if(view == null) {
             view = mInflater.inflate(R.layout.alarm_list_item, parent, false);
         }
-        Alarm a = getItem(position);
+        final Alarm a = getItem(position);
         TextView val = (TextView) view.findViewById(R.id.alarm_list_item_text);
-
+        ImageView del = (ImageView) view.findViewById(R.id.alarm_delete_button);
         if (a != null && val != null) {
             if (a.ismLessThan()) val.setText("Less than " + a.getmValue());
             else val.setText("Greater than " + a.getmValue());
+        }
+        if (del != null) {
+            del.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    remove(a);
+                    AlarmListAdapter.this.notifyDataSetChanged();
+                }
+            });
         }
         return view;
     }

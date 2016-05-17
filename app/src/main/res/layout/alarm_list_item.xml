@@ -15,7 +15,6 @@ android:weightSum="1"
     android:layout_height="wrap_content"
     android:clickable="false">
     <ImageView
-        android:id="@+id/db_device_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
@@ -28,7 +27,8 @@ android:weightSum="1"
 
     <TableLayout android:layout_gravity="center_vertical"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content">
+        android:layout_width="0dp"
+        android:layout_weight="1">
         <TableRow>
             <TextView
                 android:layout_width="wrap_content"
@@ -37,9 +37,24 @@ android:weightSum="1"
                 android:textColor="@android:color/black"
                 android:text="Test Alarm"
                 android:textSize="18sp" />
+
         </TableRow>
 
     </TableLayout>
+
+    <ImageView
+        android:id="@+id/alarm_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="alarm_icon"
+        android:minWidth="30dp"
+        android:minHeight="30dp"
+        android:theme="@style/AppTheme"
+        android:layout_margin="6dp"
+        android:clickable="true"
+        android:foregroundTint="@color/colorPrimaryDark" />
 </TableRow>
 
 
