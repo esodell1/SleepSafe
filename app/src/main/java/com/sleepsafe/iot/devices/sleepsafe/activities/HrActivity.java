@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -42,6 +43,7 @@ import com.sleepsafe.iot.devices.sleepsafe.fragments.HrActivityFragment;
 import com.sleepsafe.iot.devices.sleepsafe.fragments.HrAlarmFragment;
 import com.sleepsafe.iot.devices.sleepsafe.fragments.HrHistoryFragment;
 import com.sleepsafe.iot.devices.sleepsafe.helper.Alarm;
+import com.sleepsafe.iot.devices.sleepsafe.helper.AlarmListAdapter;
 import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 
 /**
@@ -52,8 +54,6 @@ import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
  * @version 1.0
  */
 public class HrActivity extends AppCompatActivity {
-
-    private AlarmListAdapter mAlarmAdapter;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -79,11 +79,9 @@ public class HrActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mAlarmAdapter = new AlarmListAdapter(this, R.layout.alarm_list_item, new ArrayList<Alarm>());
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container_hr);
@@ -129,8 +127,11 @@ public class HrActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private Context mContext;
+
+        public SectionsPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
+            mContext = context;
         }
 
         @Override
@@ -168,13 +169,6 @@ public class HrActivity extends AppCompatActivity {
                     return "Alarms";
             }
             return null;
-        }
-    }
-
-    public class AlarmListAdapter extends ArrayAdapter<Alarm> {
-
-        public AlarmListAdapter(Context context, int resource, List<Alarm> objects) {
-            super(context, resource, objects);
         }
     }
 }
