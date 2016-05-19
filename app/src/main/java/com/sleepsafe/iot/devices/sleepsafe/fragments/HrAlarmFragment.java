@@ -1,45 +1,33 @@
 package com.sleepsafe.iot.devices.sleepsafe.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.RadioButton;
+import android.widget.NumberPicker;
+import android.widget.SeekBar;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
-import com.sleepsafe.iot.devices.sleepsafe.activities.HrActivity;
-import com.sleepsafe.iot.devices.sleepsafe.helper.Alarm;
-import com.sleepsafe.iot.devices.sleepsafe.helper.AlarmListAdapter;
-import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 
 
 public class HrAlarmFragment extends Fragment {
-    private HistoryDBProvider mDB;
-    private AlarmListAdapter mAlarmListAdapter;
+    private static final int BASE_HR_VALUE = 40;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAlarmListAdapter = new AlarmListAdapter(getActivity().getApplicationContext(), R.layout.alarm_list_item);
     }
 
     public HrAlarmFragment() {
         super();
-    }
-
-    private void addAlarm(int value, boolean lessThan) {
-        mAlarmListAdapter.add(new Alarm(value, lessThan));
-        mAlarmListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -47,39 +35,45 @@ public class HrAlarmFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View rootView;
         rootView = inflater.inflate(R.layout.fragment_alarms, container, false);
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.hr_add_alarm);
-        final ListView alarmList = (ListView) rootView.findViewById(R.id.alarms_hr_list);
-        alarmList.setAdapter(mAlarmListAdapter);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        final SharedPreferences mPref = getActivity().getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
+        int maxHR = mPref.getInt(getString(R.string.pref_alarm_max_hr), 120);
+        int minHR = mPref.getInt(getString(R.string.pref_alarm_min_hr), 50);
+        final Switch enableMax = (Switch) rootView.findViewById(R.id.alarm_enable_max);
+        final Switch enableMin = (Switch) rootView.findViewById(R.id.alarm_enable_min);
+        final TextView maxTitle = (TextView) rootView.findViewById(R.id.alarm_max_title);
+        final TextView minTitle = (TextView) rootView.findViewById(R.id.alarm_min_title);
+        final NumberPicker maxText = (NumberPicker) rootView.findViewById(R.id.alarm_max_text);
+        final NumberPicker minText = (NumberPicker) rootView.findViewById(R.id.alarm_min_text);
 
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Create New Alarm");
-                    builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
-                    final View layout = getActivity().getLayoutInflater().inflate(R.layout.alarm_dialog, null);
-                    builder.setView(layout);
-                    builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            EditText val = (EditText)layout.findViewById(R.id.alarm_value);
-                            Log.v("ALARM VALUE ", "VALUE: " + val.getText().toString());
-                            RadioButton lessThan = (RadioButton)layout.findViewById(R.id.alarm_value_less);
-                            addAlarm(Integer.parseInt(val.getText().toString()), lessThan.isChecked());
-                        }
-                    });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                        }
-                    });
+        maxText.setMinValue(40);
+        maxText.setValue(maxHR);
+        maxText.setMaxValue(180);
+        Log.v("MAX", "" + maxHR);
+        //maxText.setEnabled(false);
 
+        minText.setMinValue(40);
+        minText.setValue(minHR);
+        minText.setMaxValue(180);
+        Log.v("MIN", "" + minHR);
+        //minText.setEnabled(false);
 
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-            });
-        }
+        enableMax.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("Switch", "Switch changed to " + enableMax.isChecked());
+                maxTitle.setEnabled(enableMax.isChecked());
+                maxText.setEnabled(enableMax.isChecked());
+            }
+        });
+        enableMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("Switch", "Switch changed to " + enableMax.isChecked());
+                minTitle.setEnabled(enableMin.isChecked());
+                minText.setEnabled(enableMin.isChecked());
+            }
+        });
+
         return rootView;
     }
 

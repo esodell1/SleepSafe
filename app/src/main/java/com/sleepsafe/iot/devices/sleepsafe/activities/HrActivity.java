@@ -1,15 +1,7 @@
 package com.sleepsafe.iot.devices.sleepsafe.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.database.DataSetObserver;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -18,33 +10,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.fragments.HrActivityFragment;
 import com.sleepsafe.iot.devices.sleepsafe.fragments.HrAlarmFragment;
 import com.sleepsafe.iot.devices.sleepsafe.fragments.HrHistoryFragment;
-import com.sleepsafe.iot.devices.sleepsafe.helper.Alarm;
-import com.sleepsafe.iot.devices.sleepsafe.helper.AlarmListAdapter;
-import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 
 /**
  * This class implements the main view for the heart rate display activity.

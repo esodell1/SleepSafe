@@ -109,6 +109,8 @@
     <string name="device_name">device_name</string>
     <string name="action_logout">Logout</string>
     <string name="pref_name">sleepsafe_pref_data</string>
+    <string name="pref_alarm_max_hr">pref_alarm_max_hr</string>
+    <string name="pref_alarm_min_hr">pref_alarm_min_hr</string>
 
 
 </resources>

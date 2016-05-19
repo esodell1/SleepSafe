@@ -129,11 +129,11 @@ public class MonitorSvc extends IntentService {
 
         if (user == null || user.equals("Guest")) {
             while (SERVICE_RUNNING) {
-//                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
-//                newSample(sample);
+                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
+                newSample(sample);
 
-                DeviceRequest request = new DeviceRequest();
-                request.execute(REQUEST_SAMPLE);
+//                DeviceRequest request = new DeviceRequest();
+//                request.execute(REQUEST_SAMPLE);
 
                 try {
                     Thread.sleep(4000);
@@ -146,8 +146,8 @@ public class MonitorSvc extends IntentService {
 //                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
 //                newSample(sample);
 
-//                DeviceRequest request = new DeviceRequest();
-//                request.execute(REQUEST_SAMPLE);
+                DeviceRequest request = new DeviceRequest();
+                request.execute(REQUEST_SAMPLE);
 
 
                 try {

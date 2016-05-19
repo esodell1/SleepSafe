@@ -1,34 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/alarms_hr_list"
-            android:layout_gravity="center_horizontal" />
-    </RelativeLayout>
-
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/hr_add_alarm"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_gravity="bottom|end"
-        android:src="@android:drawable/ic_lock_idle_alarm"
-        android:theme="@style/AppTheme"
-        android:tint="@color/colorAccent"
-        app:backgroundTint="@color/colorPrimary"
-        app:borderWidth="3dp"
-        app:elevation="6dp"/>
+        android:layout_margin="@dimen/db_item_margin">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/alarm_enable_max"
+                    android:layout_margin="@dimen/db_item_margin" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Maximum"
+                    android:id="@+id/alarm_max_title"
+                    android:layout_weight="8"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_margin="@dimen/db_item_margin"
+                    android:enabled="false" />
+
+                <NumberPicker
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="@dimen/db_item_margin"
+                    android:id="@+id/alarm_max_text"
+                    android:enabled="false"
+                    android:inputType="number" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/db_item_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical" >
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/alarm_enable_min"
+                    android:layout_margin="@dimen/db_item_margin" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Minimum"
+                    android:id="@+id/alarm_min_title"
+                    android:layout_weight="8"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_margin="@dimen/db_item_margin"
+                    android:enabled="false" />
+
+                <NumberPicker
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="@dimen/db_item_margin"
+                    android:id="@+id/alarm_min_text"
+                    android:enabled="false"
+                    android:inputType="number" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </FrameLayout>
+
+
+</LinearLayout>
