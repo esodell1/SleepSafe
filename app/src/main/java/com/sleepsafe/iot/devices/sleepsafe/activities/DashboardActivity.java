@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -128,20 +129,41 @@ public class DashboardActivity extends AppCompatActivity {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals("new_sample")) {
-                    int hr, spo2, temp;
-                    hr = intent.getIntExtra("hr", 0);
-                    spo2 = intent.getIntExtra("spo2", 0);
-                    temp = intent.getIntExtra("temp", 0);
-                    TextView hr_val = (TextView) findViewById(R.id.hr_value);
-                    TextView spo2_val = (TextView) findViewById(R.id.spo2_value);
-                    if (hr_val != null) hr_val.setText(Integer.toString(hr));
-                    if (spo2_val != null) spo2_val.setText(Integer.toString(spo2));
-                    if (start_button.isEnabled()) start_button.setEnabled(false);
-                    if (!stop_button.isEnabled()) stop_button.setEnabled(true);
-                } else if (intent.getAction().equals("service_running")) {
-                    start_button.setEnabled(false);
-                    stop_button.setEnabled(true);
+                switch (intent.getAction()) {
+                    case "new_sample":
+                        int hr, spo2, temp;
+                        hr = intent.getIntExtra("hr", 0);
+                        spo2 = intent.getIntExtra("spo2", 0);
+                        temp = intent.getIntExtra("temp", 0);
+                        TextView hr_val = (TextView) findViewById(R.id.hr_value);
+                        TextView spo2_val = (TextView) findViewById(R.id.spo2_value);
+                        if (hr_val != null) hr_val.setText(Integer.toString(hr));
+                        if (spo2_val != null) spo2_val.setText(Integer.toString(spo2));
+                        if (start_button.isEnabled()) start_button.setEnabled(false);
+                        if (!stop_button.isEnabled()) stop_button.setEnabled(true);
+                        break;
+                    case "service_running":
+                        start_button.setEnabled(false);
+                        stop_button.setEnabled(true);
+                        break;
+                    case "failed_sample":
+                        String msg;
+                        if (!intent.getStringExtra("msg").isEmpty())
+                            msg = intent.getStringExtra("msg");
+                        else
+                            msg = "General Error";
+                        Snackbar.make((CoordinatorLayout)findViewById(R.id.app_frame),
+                                "Error connecting to device: " + msg, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                        Intent broadcast = new Intent();
+                        broadcast.setAction(MonitorSvc.ACTION_STOP_SERVICE);
+                        sendBroadcast(broadcast);
+                        start_button.setEnabled(true);
+                        stop_button.setEnabled(false);
+                        break;
+                    default:
+                        Log.e("Message", "Unhandled broadcast received!");
+                        break;
                 }
 
             }
@@ -172,10 +194,10 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         mSharedPref = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
-        Log.v("Dashboard", "onResume SHARED PREF: " + mSharedPref.getAll().keySet());
         IntentFilter filter = new IntentFilter();
         filter.addAction("new_sample");
         filter.addAction("service_running");
+        filter.addAction("failed_sample");
         registerReceiver(mReceiver,filter);
         String ip = mSharedPref.getString(getString(R.string.pref_device_ip), "0.0.0.0");
         Log.v("Dashboard", "IP found: " + ip);

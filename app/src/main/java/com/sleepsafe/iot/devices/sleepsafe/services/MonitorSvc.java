@@ -241,8 +241,12 @@ public class MonitorSvc extends IntentService {
                     return null;
                 }
                 jsonStr = buffer.toString();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Error ", e);
+                Intent broadcast = new Intent();
+                broadcast.setAction("failed_sample");
+                broadcast.putExtra("msg", e.getMessage());
+                sendBroadcast(broadcast);
                 return null;
             } finally {
                 if (urlConnection != null) {
