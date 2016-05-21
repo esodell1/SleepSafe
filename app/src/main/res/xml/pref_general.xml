@@ -17,7 +17,8 @@
             android:title="@string/pref_title_display_name" />
 
         <Preference
-            android:title="Clear user data" />
+            android:title="Clear user data"
+            android:id="@+id/clear_user_data"/>
 
 
 
@@ -29,12 +30,12 @@
         android:title="Graph Options">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="example_switch"
+            android:key="pref_graph_draw_grid"
             android:summary="@string/pref_description_graph_grid"
             android:title="@string/pref_title_graph_grid" />
         <SwitchPreference
             android:defaultValue="true"
-            android:key="example_switch"
+            android:key="pref_graph_draw_cubic"
             android:summary="@string/pref_description_graph_cubic"
             android:title="@string/pref_title_graph_cubic" />
 

@@ -122,4 +122,10 @@ public class HrActivity extends AppCompatActivity {
             return null;
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
+    }
 }

@@ -5,19 +5,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Scene;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.utils.Utils;
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.services.MonitorSvc;
 
@@ -65,7 +71,7 @@ public class DashboardActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Snackbar.make(view, "Loading device discovery...", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                    startActivity(new Intent(getApplicationContext(), DeviceActivity.class));
+                    startActivity(new Intent(DashboardActivity.this, DeviceActivity.class));
                 }
             });
         }
@@ -75,7 +81,7 @@ public class DashboardActivity extends AppCompatActivity {
             hrdb_fragment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(getApplicationContext(), HrActivity.class));
+                    startActivity(new Intent(DashboardActivity.this, HrActivity.class));
                 }
             });
         }
@@ -85,7 +91,7 @@ public class DashboardActivity extends AppCompatActivity {
             spo2db_fragment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(getApplicationContext(), Spo2Activity.class));
+                    startActivity(new Intent(DashboardActivity.this, Spo2Activity.class));
                 }
             });
         }
@@ -97,7 +103,7 @@ public class DashboardActivity extends AppCompatActivity {
             deviceDisplay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(getApplicationContext(), DeviceActivity.class));
+                    startActivity(new Intent(DashboardActivity.this, DeviceActivity.class));
                 }
             });
         }
@@ -105,7 +111,7 @@ public class DashboardActivity extends AppCompatActivity {
         start_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService = new Intent(getApplicationContext(), MonitorSvc.class);
+                mService = new Intent(DashboardActivity.this, MonitorSvc.class);
                 mService.setAction(MonitorSvc.ACTION_START_SERVICE);
                 mService.putExtra("user", mSharedPref.getString(getString(R.string.pref_app_username), "Guest"));
                 mService.putExtra("device_ip", mSharedPref.getString(getString(R.string.pref_device_ip), "0.0.0.0"));

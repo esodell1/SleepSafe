@@ -176,6 +176,7 @@ public class MonitorSvc extends IntentService {
         broadcast.putExtra("hr", sample.hr_val);
         broadcast.putExtra("spo2", sample.spo2_val);
         broadcast.putExtra("temp", sample.temp_val);
+        broadcast.putExtra("time", sample.timestamp.toString());
         sendBroadcast(broadcast);
     }
 

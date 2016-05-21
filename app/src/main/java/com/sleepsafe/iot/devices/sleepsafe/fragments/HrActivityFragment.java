@@ -1,10 +1,19 @@
 package com.sleepsafe.iot.devices.sleepsafe.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.TimeUtils;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -20,12 +30,15 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.Utils;
 import com.sleepsafe.iot.devices.sleepsafe.R;
+import com.sleepsafe.iot.devices.sleepsafe.activities.SettingsActivity;
 import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 import com.sleepsafe.iot.devices.sleepsafe.helper.Sample;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 public class HrActivityFragment extends Fragment implements OnChartValueSelectedListener {
 
@@ -33,9 +46,43 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
     private HistoryDBProvider mDB;
     private TextView mPointValue;
     private TextView mPointTime;
+    private BroadcastReceiver mReceiver;
 
     public HrActivityFragment() {
         super();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.v("RECEIVE", "RECEIVED : " + intent.toString());
+                if (intent.getAction().equals("new_sample")) {
+                    LineData data = mHRActivity.getData();
+                    if (data != null) {
+                        ILineDataSet set = data.getDataSetByIndex(0);
+                        // set.addEntry(...); // can be called as well
+
+                        if (set == null) {
+                            set = createSet();
+                            data.addDataSet(set);
+                        }
+
+                        // add a new x-value first
+                        data.addXValue(intent.getStringExtra("time"));
+                        data.addEntry(new Entry(intent.getIntExtra("hr", 0), set.getEntryCount()), 0);
+
+                        mHRActivity.notifyDataSetChanged();
+                        mHRActivity.setVisibleXRangeMaximum(20);
+                        mHRActivity.moveViewToX(data.getXValCount() - 21);
+                    }
+
+                }
+
+            }
+        };
     }
 
     @Override
@@ -54,6 +101,11 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
     public void onResume() {
         super.onResume();
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("new_sample");
+        getActivity().registerReceiver(mReceiver,filter);
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         // Populate graph data and display
         LineDataSet set1;
         ArrayList<Entry> yVals = (ArrayList<Entry>) mDB.getHRSamples();
@@ -70,7 +122,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         mHRActivity.setDrawGridBackground(false);
         mHRActivity.setOnChartValueSelectedListener(this);
         mHRActivity.getLegend().setEnabled(false);
-        mHRActivity.animateXY(1000, 1000);
+        mHRActivity.animateX(1000);
 
 
         if (mHRActivity.getLineData() == null) {
@@ -82,7 +134,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
             set1.setCircleRadius(3f);
             set1.setDrawCircleHole(true);
             set1.setDrawValues(false);
-            set1.setDrawCubic(true);
+            set1.setDrawCubic(settings.getBoolean("pref_graph_draw_cubic", true));
 
 
 
@@ -110,6 +162,29 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
     public void onNothingSelected() {
         mPointValue.setText(getString(R.string.default_db_value));
         mPointTime.setText(getString(R.string.default_db_value));
+    }
+
+    @Override
+    public void onPause() {
+        getActivity().unregisterReceiver(mReceiver);
+        super.onPause();
+    }
+
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(ColorTemplate.getHoloBlue());
+        set.setCircleColor(Color.WHITE);
+        set.setLineWidth(2f);
+        set.setCircleRadius(4f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setValueTextColor(Color.WHITE);
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        return set;
     }
 }
 

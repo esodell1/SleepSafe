@@ -157,8 +157,9 @@ public class HistoryDBProvider {
         public HistoryDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
             CREATE_SAMPLE_SQL = "CREATE TABLE IF NOT EXISTS SampleHistory\n" +
-                    "    (hr INTEGER, spo2 INTEGER,\n" +
-                    "    temp INTEGER, time TEXT PRIMARY KEY)";
+                    "   (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "    hr INTEGER, spo2 INTEGER,\n" +
+                    "    temp INTEGER, time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)";
                     //context.getString(R.string.CREATE_SAMPLE_SQL);
             DROP_SAMPLE_SQL = "DROP TABLE IF EXISTS SampleHistory";
             //context.getString(R.string.DROP_SAMPLE_SQL);
