@@ -168,16 +168,18 @@ public class MonitorSvc extends IntentService {
         // Local store of sample
         samples.add(sample);
 
-        mDBProvider.insertSample(sample);
+        if (mDBProvider.insertSample(sample)) {
+            // Broadcast new sample
+            Intent broadcast = new Intent();
+            broadcast.setAction("new_sample");
+            broadcast.putExtra("hr", sample.hr_val);
+            broadcast.putExtra("spo2", sample.spo2_val);
+            broadcast.putExtra("temp", sample.temp_val);
+            broadcast.putExtra("time", sample.timestamp.toString());
+            sendBroadcast(broadcast);
+        }
 
-        // Broadcast new sample
-        Intent broadcast = new Intent();
-        broadcast.setAction("new_sample");
-        broadcast.putExtra("hr", sample.hr_val);
-        broadcast.putExtra("spo2", sample.spo2_val);
-        broadcast.putExtra("temp", sample.temp_val);
-        broadcast.putExtra("time", sample.timestamp.toString());
-        sendBroadcast(broadcast);
+
     }
 
     /**

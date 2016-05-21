@@ -37,6 +37,9 @@ import com.sleepsafe.iot.devices.sleepsafe.activities.SettingsActivity;
 import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 import com.sleepsafe.iot.devices.sleepsafe.helper.Sample;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
@@ -76,7 +79,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
 
                         mHRActivity.notifyDataSetChanged();
                         mHRActivity.setVisibleXRangeMaximum(20);
-                        mHRActivity.moveViewToX(data.getXValCount() - 21);
+                        mHRActivity.moveViewToX(data.getXValCount());
                     }
 
                 }
@@ -108,11 +111,12 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         // Populate graph data and display
         LineDataSet set1;
-        ArrayList<Entry> yVals = (ArrayList<Entry>) mDB.getHRSamples();
-
-        ArrayList<String> xVals = new ArrayList<String>();
-        for (int i = 0; i < yVals.size(); i++) {
-            xVals.add((i) + "");
+        ArrayList<Sample> samples = (ArrayList<Sample>) mDB.getSamples();
+        ArrayList<Entry> yVals = new ArrayList<>();
+        ArrayList<String> xVals = new ArrayList<>();
+        for (int i = 0; i < samples.size(); i++) {
+            xVals.add((new SimpleDateFormat("KK:mm:ss a MM/dd/yyyy")).format(new Date(samples.get(i).timestamp.getTime())));
+            yVals.add(new Entry(samples.get(i).hr_val, i));
             yVals.get(i).setXIndex(i);
         }
 
@@ -154,7 +158,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e!= null) {
             mPointValue.setText(String.valueOf(e.getVal()));
-            mPointTime.setText(String.valueOf(e.getXIndex()));
+            mPointTime.setText(mHRActivity.getXValue(e.getXIndex()));
         }
     }
 

@@ -18,8 +18,7 @@
 
         <Preference
             android:title="Clear user data"
-            android:id="@+id/clear_user_data"/>
-
+            android:key="pref_clear_data" />
 
 
     </PreferenceCategory>

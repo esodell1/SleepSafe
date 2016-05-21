@@ -3,6 +3,7 @@ package com.sleepsafe.iot.devices.sleepsafe.activities;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -17,12 +18,14 @@ import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
+import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 
 import java.util.List;
 
@@ -195,6 +198,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
+
+            Preference clear = (Preference) findPreference("pref_clear_data");
+            clear.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Confirm Data Clear");
+                    builder.setIcon(android.R.drawable.ic_menu_delete);
+                    builder.setMessage("Are you sure you want to delete all the current user's data? This cannot be undone.");
+                    builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            HistoryDBProvider mDB = new HistoryDBProvider(getActivity());
+                            mDB.deleteSamples();
+                            mDB.closeDB();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    builder.create().show();
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -203,8 +232,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (id == android.R.id.home) {
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
-            } else if (id == R.id.clear_user_data) {
-                Log.v("Settings", "Clear user data!!");
             }
             return super.onOptionsItemSelected(item);
         }

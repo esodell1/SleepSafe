@@ -1,5 +1,6 @@
 package com.sleepsafe.iot.devices.sleepsafe.helper;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -17,21 +18,21 @@ public class Sample {
     public int hr_val;
     public int spo2_val;
     public int temp_val;
-    public Calendar timestamp;
+    public Timestamp timestamp;
 
     public Sample(int hr, int spo2, int temp) {
         this.hr_val = hr;
         this.spo2_val = spo2;
         this.temp_val = temp;
-        this.timestamp = Calendar.getInstance();
+        this.timestamp = new Timestamp(Calendar.getInstance().getTimeInMillis());
     }
 
-    public Sample(int hr, int spo2, int temp, String timeString) {
+    public Sample(int hr, int spo2, int temp, long timeString) {
         this.hr_val = hr;
         this.spo2_val = spo2;
         this.temp_val = temp;
-        this.timestamp = new GregorianCalendar();
-        this.timestamp.setTime(new Date(Long.parseLong(timeString)));
+        this.timestamp = new Timestamp(timeString);
+
     }
 
     @Override

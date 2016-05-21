@@ -6,9 +6,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.github.mikephil.charting.data.Entry;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -65,7 +67,6 @@ public class HistoryDBProvider {
         contentValues.put("spo2", sample.spo2_val);
         contentValues.put("temp", sample.temp_val);
         contentValues.put("time", Calendar.getInstance().getTimeInMillis());
-
         long rowId = mSQLiteDatabase.insert(DB_TABLE, null, contentValues);
         return rowId != -1;
     }
@@ -77,10 +78,6 @@ public class HistoryDBProvider {
         mSQLiteDatabase.close();
     }
 
-    /**
-     * Returns the list of courses from the local Course table.
-     * @return list
-     */
     public List<Sample> getSamples() {
 
         String[] columns = {
@@ -94,16 +91,13 @@ public class HistoryDBProvider {
                 null,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
-                null                                 // The sort order
+                "time"                                 // The sort order
         );
         c.moveToFirst();
-        List<Sample> list = new ArrayList<Sample>();
+        List<Sample> list = new ArrayList<>();
         for (int i=0; i<c.getCount(); i++) {
-            int hr = c.getInt(0);
-            int spo2 = c.getInt(1);
-            int temp = c.getInt(2);
-            String time = c.getString(3);
-            Sample sample = new Sample(hr, spo2, temp, time);
+            Sample sample = new Sample(c.getInt(0), c.getInt(1), c.getInt(2), c.getLong(3));
+            Log.v("DBHELPER", "Sample: " + sample.toString());
             list.add(sample);
             c.moveToNext();
         }
@@ -159,7 +153,7 @@ public class HistoryDBProvider {
             CREATE_SAMPLE_SQL = "CREATE TABLE IF NOT EXISTS SampleHistory\n" +
                     "   (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "    hr INTEGER, spo2 INTEGER,\n" +
-                    "    temp INTEGER, time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)";
+                    "    temp INTEGER, time LONG NOT NULL DEFAULT CURRENT_TIMESTAMP)";
                     //context.getString(R.string.CREATE_SAMPLE_SQL);
             DROP_SAMPLE_SQL = "DROP TABLE IF EXISTS SampleHistory";
             //context.getString(R.string.DROP_SAMPLE_SQL);
