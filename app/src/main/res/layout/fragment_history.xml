@@ -9,6 +9,16 @@
         android:layout_height="match_parent"
         android:id="@+id/history_list"
         android:divider="#DDDDDD"
-        android:dividerHeight="@dimen/history_list_item_divider"/>
+        android:dividerHeight="@dimen/history_list_item_divider">
+
+        </ListView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/empty_history_list"
+        android:text="No History Found."
+        android:textSize="@dimen/history_list_empty_text"
+        android:gravity="center_vertical|center_horizontal" />
 
 </FrameLayout>

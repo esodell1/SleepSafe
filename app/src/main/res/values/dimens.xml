@@ -14,4 +14,5 @@
     <dimen name="history_list_item_padding">8dp</dimen>
     <dimen name="history_list_item_height">100dp</dimen>
     <dimen name="history_list_item_divider">1dp</dimen>
+    <dimen name="history_list_empty_text">18sp</dimen>
 </resources>

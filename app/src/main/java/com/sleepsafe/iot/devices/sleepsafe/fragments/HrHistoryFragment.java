@@ -46,6 +46,8 @@ public class HrHistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_history, container, false);
         mList = (ListView) rootView.findViewById(R.id.history_list);
+        TextView tv = (TextView) rootView.findViewById(R.id.empty_history_list);
+        mList.setEmptyView(tv);
         mDB = new HistoryDBProvider(this.getContext());
         return rootView;
     }
@@ -82,6 +84,7 @@ public class HrHistoryFragment extends Fragment {
                     .format(session.getmEnd());
             nameTextView.setText("From " + start + " to " + end);
             avgTextView.setText("Session " + position);
+
             populateGraph(chart, session);
             return rowView;
         }
