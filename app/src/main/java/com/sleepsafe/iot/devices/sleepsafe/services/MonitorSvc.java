@@ -44,6 +44,7 @@ public class MonitorSvc extends IntentService {
     public static final String ACTION_STOP_SERVICE = "stop_svc";
     private static final String TAG = "SleepSafeMonitorSvc";
     private static final String REQUEST_SAMPLE = "sample";
+    private static int mCurrentSession;
     private HistoryDBProvider mDBProvider;
 
     // URL of emulator server (to be replaced by device):
@@ -123,9 +124,9 @@ public class MonitorSvc extends IntentService {
 
         startForeground(1, builder.build());
 
-
         samples = new ArrayList<>();
         mDBProvider = new HistoryDBProvider(this);
+        mCurrentSession = mDBProvider.getNextSession();
 
         if (user == null || user.equals("Guest")) {
             while (SERVICE_RUNNING) {
@@ -168,7 +169,7 @@ public class MonitorSvc extends IntentService {
         // Local store of sample
         samples.add(sample);
 
-        if (mDBProvider.insertSample(sample)) {
+        if (mDBProvider.insertSample(sample, mCurrentSession)) {
             // Broadcast new sample
             Intent broadcast = new Intent();
             broadcast.setAction("new_sample");
@@ -176,6 +177,7 @@ public class MonitorSvc extends IntentService {
             broadcast.putExtra("spo2", sample.spo2_val);
             broadcast.putExtra("temp", sample.temp_val);
             broadcast.putExtra("time", sample.timestamp.toString());
+            broadcast.putExtra("session", sample.session);
             sendBroadcast(broadcast);
         }
 
@@ -187,6 +189,7 @@ public class MonitorSvc extends IntentService {
      */
     private void stopSvc() {
         SERVICE_RUNNING = false;
+        mCurrentSession = 0;
         unregisterReceiver(mReceiver);
         mDBProvider.closeDB();
         Log.v(TAG, "Service terminated for user: " + user);

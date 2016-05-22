@@ -62,7 +62,6 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.v("RECEIVE", "RECEIVED : " + intent.toString());
                 if (intent.getAction().equals("new_sample")) {
                     LineData data = mHRActivity.getData();
                     if (data != null) {
@@ -112,7 +111,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         // Populate graph data and display
         LineDataSet set1;
-        ArrayList<Sample> samples = (ArrayList<Sample>) mDB.getSamples();
+        ArrayList<Sample> samples = (ArrayList<Sample>) mDB.getCurrentSessionSamples();
         ArrayList<Entry> yVals = new ArrayList<>();
         ArrayList<String> xVals = new ArrayList<>();
         for (int i = 0; i < samples.size(); i++) {
