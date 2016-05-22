@@ -119,7 +119,7 @@ public class MonitorSvc extends IntentService {
         Intent notificationIntent = new Intent(getApplicationContext(), DashboardActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
 
-        builder.setFullScreenIntent(pendingIntent, true);
+        builder.setContentIntent(pendingIntent);
 
         startForeground(1, builder.build());
 

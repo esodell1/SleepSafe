@@ -42,6 +42,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class HrActivityFragment extends Fragment implements OnChartValueSelectedListener {
 
@@ -115,7 +116,8 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         ArrayList<Entry> yVals = new ArrayList<>();
         ArrayList<String> xVals = new ArrayList<>();
         for (int i = 0; i < samples.size(); i++) {
-            xVals.add((new SimpleDateFormat("KK:mm:ss a MM/dd/yyyy")).format(new Date(samples.get(i).timestamp.getTime())));
+            xVals.add((new SimpleDateFormat("KK:mm:ss a MM/dd/yyyy", Locale.US))
+                    .format(new Date(samples.get(i).timestamp.getTime())));
             yVals.add(new Entry(samples.get(i).hr_val, i));
             yVals.get(i).setXIndex(i);
         }
@@ -126,7 +128,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         mHRActivity.setDrawGridBackground(false);
         mHRActivity.setOnChartValueSelectedListener(this);
         mHRActivity.getLegend().setEnabled(false);
-        mHRActivity.animateX(1000);
+        mHRActivity.animateXY(1000, 1000);
 
 
         if (mHRActivity.getLineData() == null) {
