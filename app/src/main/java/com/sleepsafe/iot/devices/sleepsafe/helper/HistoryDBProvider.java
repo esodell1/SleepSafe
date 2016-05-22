@@ -96,6 +96,22 @@ public class HistoryDBProvider {
         return list;
     }
 
+    public List<Session> getSessions() {
+        List<Session> list = new ArrayList<>();
+        List<Sample> samples = getSamples();
+        final int numSessions = (getNextSession() - 1);
+        for(int i = 0; i < numSessions; i++) {
+            list.add(new Session());
+        }
+        for(int i = 0; i < samples.size(); i++) {
+            list.get(samples.get(i).session - 1).addSample(samples.get(i));
+        }
+        for(int i = 0; i < list.size(); i++) {
+            list.get(i).computeMetaInfo();
+        }
+        return list;
+    }
+
     public List<Sample> getCurrentSessionSamples() {
 
         String SQL = "SELECT * FROM " + DB_TABLE +

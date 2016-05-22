@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/history_list_item_height"
+    android:padding="6dip">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/history_item_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textSize="10sp"
+        android:layout_toLeftOf="@+id/history_item_average"
+        android:lines="2"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/history_item_average"
+        android:textSize="16sp"
+        android:layout_alignTop="@+id/history_item_name"
+        android:layout_alignRight="@+id/history_item_chart"
+        android:layout_alignEnd="@+id/history_item_chart" />
+
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/history_item_average"
+        android:id="@+id/history_item_chart">
+
+    </com.github.mikephil.charting.charts.LineChart>
+</RelativeLayout>
