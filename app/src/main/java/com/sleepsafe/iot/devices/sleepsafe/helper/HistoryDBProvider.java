@@ -116,7 +116,7 @@ public class HistoryDBProvider {
 
         String SQL = "SELECT * FROM " + DB_TABLE +
                 " WHERE session=" + (getNextSession() - 1) +
-                " ORDER BY time DESC";
+                " ORDER BY time ASC";
 
         String[] columns = {
                 "hr", "spo2", "temp", "time", "session"
