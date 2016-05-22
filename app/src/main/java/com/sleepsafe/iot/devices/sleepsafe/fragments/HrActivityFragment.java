@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -121,20 +122,35 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
             yVals.get(i).setXIndex(i);
         }
 
-        //mHRActivity.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         mHRActivity.setBackground(getResources().getDrawable(R.drawable.graph_bg));
         mHRActivity.setDescription("");
         mHRActivity.setDrawGridBackground(false);
         mHRActivity.setOnChartValueSelectedListener(this);
         mHRActivity.getLegend().setEnabled(false);
         mHRActivity.animateXY(1000, 1000);
-
+        if (!settings.getBoolean("pref_graph_draw_grid", true)) {
+            XAxis xaxis = mHRActivity.getXAxis();
+            xaxis.setDrawGridLines(false);
+            xaxis.setEnabled(false);
+            YAxis leftAxis = mHRActivity.getAxisLeft();
+            leftAxis.setDrawGridLines(false);
+            leftAxis.setEnabled(false);
+            YAxis rightAxis = mHRActivity.getAxisRight();
+            rightAxis.setDrawGridLines(false);
+            rightAxis.setEnabled(false);
+        }
 
         if (mHRActivity.getLineData() == null) {
             set1 = new LineDataSet(yVals, "Heart Rate");
             set1.enableDashedHighlightLine(10f, 5f, 0f);
-            set1.setColor(getResources().getColor(R.color.graphLine));
-            set1.setCircleColor(Color.WHITE);
+            if (settings.getString("pref_graph_scheme", "").equals("default")) {
+                set1.setColor(getResources().getColor(R.color.graphLine));
+                set1.setCircleColor(Color.WHITE);
+            } else if (settings.getString("pref_graph_scheme", "").equals("high_contrast")) {
+                mHRActivity.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                set1.setColor(Color.BLACK);
+                set1.setCircleColor(Color.RED);
+            }
             set1.setLineWidth(3f);
             set1.setCircleRadius(3f);
             set1.setDrawCircleHole(true);

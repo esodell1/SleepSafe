@@ -55,10 +55,12 @@ public class HistoryDBProvider {
     }
 
     public int getNextSession() {
+        Log.v("DBHELPER", "DB: " + mSQLiteDatabase.toString());
         Cursor c = mSQLiteDatabase.rawQuery("SELECT MAX(session) FROM " + DB_TABLE, null, null);
         c.moveToLast();
         int val = 0;
         if (c.getCount() > 0) val = c.getInt(0) + 1;
+        c.close();
         return val;
     }
 
@@ -92,7 +94,7 @@ public class HistoryDBProvider {
             list.add(sample);
             c.moveToNext();
         }
-
+        c.close();
         return list;
     }
 
@@ -113,14 +115,11 @@ public class HistoryDBProvider {
     }
 
     public List<Sample> getCurrentSessionSamples() {
-
+        final int session = getNextSession();
+        if (session == 0) return null;
         String SQL = "SELECT * FROM " + DB_TABLE +
-                " WHERE session=" + (getNextSession() - 1) +
+                " WHERE session=" + (session - 1) +
                 " ORDER BY time ASC";
-
-        String[] columns = {
-                "hr", "spo2", "temp", "time", "session"
-        };
 
         Log.v("DBHELPER", "SQL: " + SQL);
         Cursor c = mSQLiteDatabase.rawQuery(SQL, null, null);
@@ -165,6 +164,12 @@ public class HistoryDBProvider {
             DROP_SAMPLE_SQL = "DROP TABLE IF EXISTS SampleHistory";
             //context.getString(R.string.DROP_SAMPLE_SQL);
 
+        }
+
+        @Override
+        public void onOpen(SQLiteDatabase db) {
+            super.onOpen(db);
+            db.execSQL(CREATE_SAMPLE_SQL);
         }
 
         public void clearDB(SQLiteDatabase db) {

@@ -83,7 +83,7 @@ public class HrHistoryFragment extends Fragment {
             String end = (new SimpleDateFormat("KK:mm:ss a M/d/yyyy", Locale.US))
                     .format(session.getmEnd());
             nameTextView.setText("From " + start + " to " + end);
-            avgTextView.setText("Session " + position);
+            avgTextView.setText("Session " + (position + 1));
 
             populateGraph(chart, session);
             return rowView;

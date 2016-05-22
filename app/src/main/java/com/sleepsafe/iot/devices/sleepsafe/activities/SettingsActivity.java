@@ -197,7 +197,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            bindPreferenceSummaryToValue(findPreference("pref_graph_scheme"));
 
             Preference clear = (Preference) findPreference("pref_clear_data");
             clear.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
