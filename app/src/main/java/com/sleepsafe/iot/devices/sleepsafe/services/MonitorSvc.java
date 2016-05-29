@@ -7,8 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -127,6 +129,7 @@ public class MonitorSvc extends IntentService {
         samples = new ArrayList<>();
         mDBProvider = new HistoryDBProvider(this);
         mCurrentSession = mDBProvider.getNextSession();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (user == null || user.equals("Guest")) {
             while (SERVICE_RUNNING) {
@@ -136,8 +139,10 @@ public class MonitorSvc extends IntentService {
 //                DeviceRequest request = new DeviceRequest();
 //                request.execute(REQUEST_SAMPLE);
 
+                String freq = settings.getString("sync_frequency", "4");
+                int delay = Integer.parseInt(freq) * 1000;
                 try {
-                    Thread.sleep(4000);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -150,9 +155,10 @@ public class MonitorSvc extends IntentService {
                 DeviceRequest request = new DeviceRequest();
                 request.execute(REQUEST_SAMPLE);
 
-
+                String freq = settings.getString("sync_frequency", "4");
+                int delay = Integer.parseInt(freq) * 1000;
                 try {
-                    Thread.sleep(4000);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

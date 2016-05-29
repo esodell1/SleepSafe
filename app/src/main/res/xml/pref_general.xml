@@ -1,11 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="User Data">
 
-
-    <PreferenceCategory
-        android:title="User Data">
-
-        <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-        <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
         <EditTextPreference
             android:capitalize="words"
             android:defaultValue="@string/pref_default_display_name"
@@ -24,9 +19,7 @@
     </PreferenceCategory>
 
 
-
-    <PreferenceCategory
-        android:title="Graph Options">
+    <PreferenceCategory android:title="Graph Options">
         <SwitchPreference
             android:defaultValue="true"
             android:key="pref_graph_draw_grid"
@@ -38,9 +31,7 @@
             android:summary="@string/pref_description_graph_cubic"
             android:title="@string/pref_title_graph_cubic" />
 
-        <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-        <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+
         <ListPreference
             android:entries="@array/pref_color_graph_items"
             android:entryValues="@array/pref_color_graph_values"

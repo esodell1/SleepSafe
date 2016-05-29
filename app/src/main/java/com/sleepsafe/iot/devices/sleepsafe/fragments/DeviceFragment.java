@@ -24,6 +24,7 @@ import java.util.List;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity;
+import com.sleepsafe.iot.devices.sleepsafe.helper.FirmwareOTA;
 
 /**
  * This class implements the main fragment for selecting the
@@ -130,9 +131,9 @@ public class DeviceFragment extends Fragment {
             NsdServiceInfo nsdInfo = new NsdServiceInfo();
             nsdInfo.setServiceName("SleepSafe <Test>");
             nsdInfo.setServiceType("._http._tcp");
-            nsdInfo.setPort(8080);
+            nsdInfo.setPort(80);
             try {
-                nsdInfo.setHost(InetAddress.getByName("10.16.29.220"));
+                nsdInfo.setHost(InetAddress.getByName("192.168.0.15"));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -282,12 +283,13 @@ public class DeviceFragment extends Fragment {
             mResolveListener = new NsdManager.ResolveListener() {
                 @Override
                 public void onResolveFailed(android.net.nsd.NsdServiceInfo serviceInfo, int errorCode) {
-                    Log.e(TAG, "Resolve failed" + errorCode);
+                    Log.e(TAG, "Resolve failed: " + errorCode);
                     mDevicePref = getContext().getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
                     mDevicePref.edit().putString(getString(R.string.pref_device_ip), serviceInfo.getHost().toString()).apply();
                     mDevicePref.edit().putInt(getString(R.string.pref_device_port), serviceInfo.getPort()).apply();
                     mDevicePref.edit().putString(getString(R.string.pref_device_name), serviceInfo.getServiceName()).apply();
                     Log.v(TAG, "Resolve failed SHARED PREF: " + mDevicePref.getAll().keySet());
+
                 }
                 @Override
                 public void onServiceResolved(android.net.nsd.NsdServiceInfo serviceInfo) {
