@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#283593</color>
     <color name="colorAccent">#c5cae9</color>
     <color name="graphLine">#a40000</color>
+    <color name="black">#000000</color>
 </resources>
