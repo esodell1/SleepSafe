@@ -1,8 +1,11 @@
 package com.sleepsafe.iot.devices.sleepsafe.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -11,8 +14,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ShareActionProvider;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.fragments.HrActivityFragment;
@@ -27,7 +34,6 @@ import com.sleepsafe.iot.devices.sleepsafe.fragments.HrHistoryFragment;
  * @version 1.0
  */
 public class HrActivity extends AppCompatActivity {
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -42,6 +48,39 @@ public class HrActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_share, menu);
+        MenuItem item = menu.findItem(R.id.menu_share);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.v("SHARE", "Share clicked!");
+                AlertDialog.Builder builder = new AlertDialog.Builder(HrActivity.this);
+                builder.setTitle("Share Heart Rate Session");
+                builder.setIcon(android.R.drawable.ic_menu_share);
+                builder.setMessage("Please enter recipient email: ");
+                final EditText text = new EditText(HrActivity.this);
+                builder.setView(text);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.v("SHARE", "Share with " + text.getText());
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
+                return false;
+            }
+        });
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

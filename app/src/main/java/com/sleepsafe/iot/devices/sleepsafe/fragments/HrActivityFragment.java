@@ -128,6 +128,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         mHRActivity.setOnChartValueSelectedListener(this);
         mHRActivity.getLegend().setEnabled(false);
         mHRActivity.animateXY(1000, 1000);
+        mHRActivity.setHorizontalScrollBarEnabled(true);
         if (!settings.getBoolean("pref_graph_draw_grid", true)) {
             XAxis xaxis = mHRActivity.getXAxis();
             xaxis.setDrawGridLines(false);

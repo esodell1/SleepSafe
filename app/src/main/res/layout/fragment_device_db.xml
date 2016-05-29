@@ -1,73 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/db_item_height"
     android:layout_margin="@dimen/db_item_margin"
-    tools:context=".fragments.HrDbFragment"
+    android:background="@drawable/border"
     android:clickable="true"
-    android:orientation="horizontal"
-    android:weightSum="1"
-    android:gravity="center"
     android:minHeight="@dimen/db_item_height"
-    android:background="@drawable/border">
+    android:padding="@dimen/device_db_padding"
+    tools:context=".fragments.HrDbFragment">
 
-    <TableRow android:gravity="center">
-        <ImageView
-            android:id="@+id/db_device_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="6dp"
-            android:layout_marginEnd="6dp"
-            android:src="@mipmap/ic_launcher" />
+    <ImageView
+        android:id="@+id/db_device_icon"
+        android:layout_width="@dimen/db_item_height"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="@dimen/device_db_padding"
+        android:src="@mipmap/ic_launcher"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
 
-        <TableLayout>
-            <TableRow>
-                <TextView
-                    android:id="@+id/db_device_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|start"
+    <TextView
+        android:id="@+id/db_device_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/db_device_icon"
+        android:layout_toRightOf="@+id/db_device_icon"
+        android:gravity="center|start"
+        android:text="Device Not Found"
+        android:textSize="@dimen/db_text_header"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/db_item_margin" />
 
-                    android:textStyle="bold"
-                    android:textSize="@dimen/db_text_header"
-                    android:text="Device Not Found" />
-            </TableRow>
-            <LinearLayout android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:text="Address: " />
-                <TextView
-                    android:id="@+id/db_device_ip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="#0099CC"
-                    android:text="0.0.0.0" />
-            </LinearLayout>
-            <LinearLayout android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:text="Port: " />
-                <TextView
-                    android:id="@+id/db_device_port"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="#0099CC"
-                    android:text="80" />
-            </LinearLayout>
-        </TableLayout>
-    </TableRow>
+    <TextView
+        android:id="@+id/device_db_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/db_device_name"
+        android:layout_toEndOf="@+id/db_device_icon"
+        android:layout_toRightOf="@+id/db_device_icon"
+        android:layout_marginStart="@dimen/db_item_tabbed"
+        android:text="Address: " />
+
+    <TextView
+        android:id="@+id/db_device_ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/db_device_name"
+        android:layout_alignRight="@+id/db_device_name"
+        android:layout_toRightOf="@+id/device_db_address"
+        android:layout_below="@+id/db_device_name"
+        android:text="0.0.0.0"
+        android:textColor="#0099CC" />
 
 
+    <TextView
+        android:id="@+id/device_db_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/db_device_icon"
+        android:layout_below="@+id/device_db_address"
+        android:layout_marginStart="@dimen/db_item_tabbed"
+        android:text="Port: " />
 
-</TableLayout>
+    <TextView
+        android:id="@+id/db_device_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/db_device_ip"
+        android:layout_toEndOf="@+id/device_db_port"
+        android:layout_toRightOf="@+id/device_db_port"
+        android:text="80"
+        android:textColor="#0099CC" />
+
+    <ImageButton
+        android:id="@+id/db_device_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/device_db_padding_button"
+        android:src="@android:drawable/ic_popup_sync"
+        android:backgroundTint="#ffffff"
+        android:tint="#cccccc" />
+
+
+</RelativeLayout>
