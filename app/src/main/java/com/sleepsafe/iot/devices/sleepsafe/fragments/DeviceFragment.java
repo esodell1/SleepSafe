@@ -133,7 +133,7 @@ public class DeviceFragment extends Fragment {
             nsdInfo.setServiceType("._http._tcp");
             nsdInfo.setPort(80);
             try {
-                nsdInfo.setHost(InetAddress.getByName("192.168.0.15"));
+                nsdInfo.setHost(InetAddress.getByName("192.168.1.4"));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
