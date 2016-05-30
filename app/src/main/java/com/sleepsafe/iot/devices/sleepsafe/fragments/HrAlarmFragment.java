@@ -2,6 +2,7 @@ package com.sleepsafe.iot.devices.sleepsafe.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -65,6 +66,7 @@ public class HrAlarmFragment extends Fragment {
                 maxText.setEnabled(enableMax.isChecked());
             }
         });
+
         enableMin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
