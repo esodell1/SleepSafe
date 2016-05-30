@@ -45,7 +45,7 @@ public class MonitorSvc extends IntentService {
     public static final String ACTION_START_SERVICE = "start_svc";
     public static final String ACTION_STOP_SERVICE = "stop_svc";
     private static final String TAG = "SleepSafeMonitorSvc";
-    private static final String REQUEST_SAMPLE = "sample";
+    private static final String REQUEST_SAMPLE = "GetSamples";
     private static int mCurrentSession;
     private HistoryDBProvider mDBProvider;
 

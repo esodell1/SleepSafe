@@ -36,7 +36,17 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
         assertTrue("Login activity loaded", textFound);
     }
 
-    public void testRegisterActivity() {
+    public void testRegisterActivityWithExistingEmail() {
+        boolean textFound = solo.searchText("Register");
+        assertTrue("Login fragment loaded", textFound);
+        solo.enterText(0, "testEmail@uw.edu");
+        solo.enterText(1, "123456789");
+        solo.clickOnButton("Register");
+        boolean worked = solo.searchText("SleepSafe");
+        assertFalse("Register didn't work!", worked);
+    }
+
+    public void testRegisterActivityWithNewEmail() {
         boolean textFound = solo.searchText("Register");
         assertTrue("Login fragment loaded", textFound);
         solo.enterText(0, "testEmail@uw.edu");
@@ -44,11 +54,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
         solo.clickOnButton("Register");
         boolean worked = solo.searchText("SleepSafe");
         assertTrue("Register worked!", worked);
-
     }
 
     public void testLoginActivity() {
-        //solo.clickOnView(getActivity().findViewById(R.id.action_logout));
         boolean textFound = solo.searchText("Login");
         assertTrue("Login activity loaded", textFound);
         solo.enterText(0, "testEmail@uw.edu");

@@ -30,8 +30,8 @@ import java.net.UnknownHostException;
 public class FirmwareOTA {
 
     private static final String TAG = "FirmwareOTA";
-    private static final String DEV_INFO = "DevInfo";
-    private static final String DEV_UPDATE = "update";
+    private static final String DEV_INFO = "AboutDevice";
+    private static final String DEV_UPDATE = "UpdateDeviceFirmware";
     private static final String FIRMWARE_FILE_NAME = "sleepsafe.001.bin";
     private static final int FIRMWARE_VERSION = 2;
     private static final String FIRMWARE_VERSION_STRING = "0.0.2";
@@ -53,11 +53,12 @@ public class FirmwareOTA {
 
     public void executeUpdate() {
         SharedPreferences prefs = mContext.getSharedPreferences(mContext.getString(R.string.pref_name), Context.MODE_PRIVATE);
-        BASE_URL = "http:/" + prefs.getString(mContext.getString(R.string.pref_device_ip), "192.168.0.15")
+        BASE_URL = "http:/" + prefs.getString(mContext.getString(R.string.pref_device_ip), "192.168.24.23")
                 + ":" + prefs.getInt(mContext.getString(R.string.pref_device_port), 80) + "/";
         mFW = new FW_Uploader();
         mDeviceRequest = new DeviceRequest();
         mDeviceRequest.execute();
+        Log.v("Updater", "Update");
     }
 
     public void checkVersion(DeviceInfo deviceInfo) {
@@ -227,24 +228,24 @@ public class FirmwareOTA {
         }
 
         private DeviceInfo getDataFromJSON(String jsonString) throws JSONException {
-            final String NAME = "name";
-            final String FIRMWARE = "firmware";
-            final String FIRMWARE_INT = "firmware_int";
-            final String BATTERY = "battery";
+            final String NAME = "Device_Name";
+            final String FIRMWARE = "Firmware_Version";
+            final String SERIAL_NUMBER = "SerialNumber";//FIRMWARE_INT = "firmware_int";
+            //final String BATTERY = "battery";
 
             JSONObject result = new JSONObject(jsonString);
-            String name = result.getString(NAME);
-            String fw = result.getString(FIRMWARE);
-            int fw_int = result.getInt(FIRMWARE_INT);
-            int battery = result.getInt(BATTERY);
-            return new DeviceInfo (name, fw, fw_int, battery);
+            String name = result.getJSONObject(NAME).getString("value");
+            int fw = result.getJSONObject(FIRMWARE).getInt("value");
+            int serial_int = result.getJSONObject(SERIAL_NUMBER).getInt("value");
+            //int battery = result.getInt(BATTERY);
+            return new DeviceInfo (name, fw, serial_int);//, battery);
         }
 
         @Override
         protected void onPostExecute(DeviceInfo result) {
             if (result != null) {
 
-                if (result.mFirmware_INT < FIRMWARE_VERSION) {
+                if (result.mFirmware < FIRMWARE_VERSION) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setMessage("Firmware update available!\nCurrent Version: "
                             + result.mFirmware + "\nNewest Version: "
@@ -273,19 +274,19 @@ public class FirmwareOTA {
 
     public class DeviceInfo {
         public String mName = null;
-        public String mFirmware = null;
-        public int mFirmware_INT = 0;
-        public int mBattery = 0;
+        public int mFirmware = 0;
+        public int mSerialNumber = 0;
+        //public int mBattery = 0;
 
         public DeviceInfo() {
             // default constructor
         }
 
-        public DeviceInfo(String name, String firmware, int firmware_int, int battery) {
+        public DeviceInfo(String name, int firmware, int serNum) {//, int battery) {
             mName = name;
             mFirmware = firmware;
-            mFirmware_INT = firmware_int;
-            mBattery = battery;
+            mSerialNumber = serNum;
+            //mBattery = battery;
         }
     }
 
