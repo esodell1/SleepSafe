@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -48,6 +51,7 @@ public class MonitorSvc extends IntentService {
     private static final String REQUEST_SAMPLE = "sample";
     private static int mCurrentSession;
     private HistoryDBProvider mDBProvider;
+    private Notification.Builder mNotification;
 
     // URL of emulator server (to be replaced by device):
     private String BASE_URL = "http://192.168.1.12:80/";
@@ -56,6 +60,8 @@ public class MonitorSvc extends IntentService {
     private String user = null;
     private BroadcastReceiver mReceiver;
     private static List<Sample> samples;
+
+    private MediaPlayer mPlayer;
 
     public MonitorSvc() {
         super("SleepSafeMonitorSvc");
@@ -114,17 +120,18 @@ public class MonitorSvc extends IntentService {
         broadcast.setAction("service_running");
         sendBroadcast(broadcast);
 
-        Notification.Builder builder = new Notification.Builder(this);
-        builder.setSmallIcon(R.drawable.ic_sync_black_24dp);
-        builder.setContentTitle("Monitor Service");
-        builder.setContentText("Service is running.");
+        mNotification = new Notification.Builder(this);
+        mNotification.setSmallIcon(android.R.drawable.ic_popup_sync);
+        mNotification.setContentTitle("SleepSafe");
+        mNotification.setContentText("Monitoring device...");
+        mNotification.setPriority(Notification.PRIORITY_MAX);
 
         Intent notificationIntent = new Intent(getApplicationContext(), DashboardActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
 
-        builder.setContentIntent(pendingIntent);
+        mNotification.setContentIntent(pendingIntent);
 
-        startForeground(1, builder.build());
+        startForeground(1, mNotification.build());
 
         samples = new ArrayList<>();
         mDBProvider = new HistoryDBProvider(this);
@@ -187,6 +194,12 @@ public class MonitorSvc extends IntentService {
             sendBroadcast(broadcast);
         }
 
+        // Verify setpoints:
+
+
+        // Play sound:
+        //play(this, getAlarmSound());
+
 
     }
 
@@ -195,10 +208,38 @@ public class MonitorSvc extends IntentService {
      */
     private void stopSvc() {
         SERVICE_RUNNING = false;
+        //mPlayer.stop();
         mCurrentSession = 0;
         unregisterReceiver(mReceiver);
         mDBProvider.closeDB();
         Log.v(TAG, "Service terminated for user: " + user);
+    }
+
+    private void play(Context context, Uri alert) {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(context, alert);
+            final AudioManager audio = (AudioManager) context
+                    .getSystemService(Context.AUDIO_SERVICE);
+            if (audio.getStreamVolume(AudioManager.STREAM_ALARM) != 0) {
+                mPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+                mPlayer.prepare();
+                mPlayer.start();
+            }
+        } catch (IOException e) {
+            Log.e("Error....","Check code...");
+        }
+    }
+
+    private Uri getAlarmSound() {
+        Uri alertSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alertSound == null) {
+            alertSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            if (alertSound == null) {
+                alertSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            }
+        }
+        return alertSound;
     }
 
     /**
