@@ -34,6 +34,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.Utils;
 import com.sleepsafe.iot.devices.sleepsafe.R;
+import com.sleepsafe.iot.devices.sleepsafe.activities.HrActivity;
 import com.sleepsafe.iot.devices.sleepsafe.activities.SettingsActivity;
 import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 import com.sleepsafe.iot.devices.sleepsafe.helper.Sample;
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Set;
 
 public class HrActivityFragment extends Fragment implements OnChartValueSelectedListener {
 
@@ -98,6 +100,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         mPointValue = (TextView) rootView.findViewById(R.id.activity_point_value);
         mPointTime = (TextView) rootView.findViewById(R.id.activity_point_time);
         mDB = new HistoryDBProvider(this.getContext());
+        storeSelectedData();
         return rootView;
     }
 
@@ -172,18 +175,36 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
 
     }
 
+    public static final String MY_PREFS_NAME = "SelectedData";
+
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e!= null) {
             mPointValue.setText(String.valueOf(e.getVal()));
             mPointTime.setText(mHRActivity.getXValue(e.getXIndex()));
+
+            storeSelectedData();
         }
     }
 
+    private void storeSelectedData() {
+        //Store selected point on graph to shared preferences to
+        //later send this data to a friend via text message
+        SharedPreferences myData;
+        SharedPreferences.Editor editor;
+        myData = mPointValue.getContext().getSharedPreferences("SelectedPoint", Context.MODE_PRIVATE);
+        editor = myData.edit();
+
+        editor.putString("HR", mPointValue.getText().toString());
+        editor.putString("Time", mPointTime.getText().toString());
+        editor.commit();
+    }
     @Override
     public void onNothingSelected() {
         mPointValue.setText(getString(R.string.default_db_value));
         mPointTime.setText(getString(R.string.default_db_value));
+
+        storeSelectedData();
     }
 
     @Override

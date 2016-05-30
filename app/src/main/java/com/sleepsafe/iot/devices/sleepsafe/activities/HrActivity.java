@@ -3,8 +3,8 @@ package com.sleepsafe.iot.devices.sleepsafe.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,12 +14,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.ShareActionProvider;
+import android.widget.Toast;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.fragments.HrActivityFragment;
@@ -60,13 +62,29 @@ public class HrActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(HrActivity.this);
                 builder.setTitle("Share Heart Rate Session");
                 builder.setIcon(android.R.drawable.ic_menu_share);
-                builder.setMessage("Please enter recipient email: ");
+                builder.setMessage("Please enter recipient Phone Number: ");//email: ");
                 final EditText text = new EditText(HrActivity.this);
                 builder.setView(text);
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.v("SHARE", "Share with " + text.getText());
+
+                        SharedPreferences myData;
+
+                        myData = getSharedPreferences("SelectedPoint", Context.MODE_PRIVATE);
+                        String mHr = myData.getString("HR", null);
+                        String mTime = myData.getString("Time", null);
+
+                        SmsManager smsManager = SmsManager.getDefault();
+
+                        if (!mHr.equals("--")) {
+                            String message = "My HR was " + mHr + " at " + mTime + ".";
+                            smsManager.sendTextMessage(text.getText().toString(), null, message, null, null);
+                            Log.v("Point was selected", mHr);
+                        } else {
+                            Log.v("Point wasn't selected", mHr);
+                        }
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
