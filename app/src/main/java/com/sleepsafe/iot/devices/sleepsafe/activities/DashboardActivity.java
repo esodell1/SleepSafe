@@ -2,6 +2,7 @@ package com.sleepsafe.iot.devices.sleepsafe.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
@@ -99,11 +101,14 @@ public class DashboardActivity extends AppCompatActivity {
 
 
         View deviceDisplay = findViewById(R.id.devicedb);
+
         if (deviceDisplay != null) {
             deviceDisplay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(DashboardActivity.this, DeviceActivity.class));
+                    if (start_button.isEnabled()) {
+                        startActivity(new Intent(DashboardActivity.this, DeviceActivity.class));
+                    }
                 }
             });
         }
@@ -192,6 +197,7 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         } else if (id == R.id.action_logout) {
             mSharedPref.edit().putString(getString(R.string.pref_app_username), null).apply();
+            finish();
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         }
         return super.onOptionsItemSelected(item);
@@ -223,5 +229,20 @@ public class DashboardActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        new AlertDialog.Builder(this)
+                .setTitle("Really Exit?")
+                .setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+//                        finish();
+                        moveTaskToBack(true);
+                    }
+                }).create().show();
+    }
 
 }

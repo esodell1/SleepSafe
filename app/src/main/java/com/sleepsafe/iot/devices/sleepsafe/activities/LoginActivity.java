@@ -115,6 +115,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void onClick(View view) {
                     attemptLogin(ServerAsyncTask.ACTION_LOGIN);
+
                 }
             });
         }
@@ -143,6 +144,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     private void populateAutoComplete() {

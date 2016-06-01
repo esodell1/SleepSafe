@@ -171,7 +171,6 @@ public class DeviceFragment extends Fragment {
             return v;
         }
 
-
     }
 
     /**

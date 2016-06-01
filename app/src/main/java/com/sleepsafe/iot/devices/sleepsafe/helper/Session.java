@@ -7,12 +7,16 @@ import java.util.List;
 public class Session {
     private int mSessionID = 0;
 
-    public List<Sample> getmSessionData() {
-        return mSessionData;
-    }
-
     private List<Sample> mSessionData;
+
     private int mHRAverage, mSpo2Average, mTempAverage;
+
+    private Timestamp mStart, mEnd;
+
+
+    public Session() {
+        mSessionData = new ArrayList<>();
+    }
 
     public Timestamp getmStart() {
         return mStart;
@@ -22,10 +26,8 @@ public class Session {
         return mEnd;
     }
 
-    private Timestamp mStart, mEnd;
-
-    public Session() {
-        mSessionData = new ArrayList<>();
+    public List<Sample> getmSessionData() {
+        return mSessionData;
     }
 
     public Session(int session, List<Sample> data) {
@@ -58,5 +60,4 @@ public class Session {
         mSpo2Average = (spo2 / mSessionData.size());
         mTempAverage = (temp / mSessionData.size());
     }
-
 }
