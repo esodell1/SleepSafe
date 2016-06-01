@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -31,6 +33,7 @@ import java.util.List;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity;
+import com.sleepsafe.iot.devices.sleepsafe.helper.AlarmManagerBroadcastReceiver;
 import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
 import com.sleepsafe.iot.devices.sleepsafe.helper.Sample;
 
@@ -48,10 +51,12 @@ public class MonitorSvc extends IntentService {
     public static final String ACTION_START_SERVICE = "start_svc";
     public static final String ACTION_STOP_SERVICE = "stop_svc";
     private static final String TAG = "SleepSafeMonitorSvc";
-    private static final String REQUEST_SAMPLE = "GetSamples";
+    private static final String REQUEST_SAMPLE = "sample";
     private static int mCurrentSession;
     private HistoryDBProvider mDBProvider;
     private Notification.Builder mNotification;
+    private static boolean mAlarm = false;
+    private static final AlarmManagerBroadcastReceiver mAlarmManager = new AlarmManagerBroadcastReceiver();
 
     // URL of emulator server (to be replaced by device):
     private String BASE_URL = "http://192.168.1.12:80/";
@@ -195,12 +200,36 @@ public class MonitorSvc extends IntentService {
         }
 
         // Verify setpoints:
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
+
+        if (settings.getBoolean("notifications_alarm_enable", true)) {
+            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_max_hr), false)
+                    && (prefs.getInt(getString(R.string.pref_alarm_max_hr), 140) <= sample.hr_val)) mAlarm = true;
+            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_min_hr), false)
+                    && (prefs.getInt(getString(R.string.pref_alarm_min_hr), 40) >= sample.hr_val)) mAlarm = true;
+//            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_max_spo2), false)
+//                    && (prefs.getInt(getString(R.string.pref_alarm_max_spo2), 140) <= sample.spo2_val)) mAlarm = true;
+//            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_min_spo2), false)
+//                    && (prefs.getInt(getString(R.string.pref_alarm_min_spo2), 40) >= sample.spo2_val)) mAlarm = true;
+
+
+        }
 
 
         // Play sound:
         //play(this, getAlarmSound());
 
 
+        if (mAlarm) {
+            // Actuate alarm
+            Log.e(TAG, "ALARM ACTUATED");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mNotification.setColor(getResources().getColor(android.R.color.holo_red_light));
+            }
+            mAlarmManager.setOnetimeTimer(this.getApplicationContext());
+            mAlarm = false;
+        }
     }
 
     /**

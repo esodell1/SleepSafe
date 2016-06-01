@@ -36,14 +36,12 @@
                     android:layout_margin="@dimen/db_item_margin"
                     android:enabled="false" />
 
-                <NumberPicker
+                <Button
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_margin="@dimen/db_item_margin"
-                    android:id="@+id/alarm_max_text"
-                    android:enabled="false"
-                    android:inputType="number" />
+                    android:layout_height="wrap_content"
+                    android:text="90"
+                    android:id="@+id/alarm_max_button"
+                    android:enabled="false" />
 
             </LinearLayout>
 
@@ -86,14 +84,13 @@
                     android:layout_margin="@dimen/db_item_margin"
                     android:enabled="false" />
 
-                <NumberPicker
+                <Button
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_margin="@dimen/db_item_margin"
-                    android:id="@+id/alarm_min_text"
-                    android:enabled="false"
-                    android:inputType="number" />
+                    android:layout_height="wrap_content"
+                    android:text="50"
+                    android:id="@+id/alarm_min_button"
+                    android:enabled="false" />
+
             </LinearLayout>
 
 

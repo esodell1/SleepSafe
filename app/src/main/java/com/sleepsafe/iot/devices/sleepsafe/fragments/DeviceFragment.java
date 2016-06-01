@@ -47,10 +47,6 @@ public class DeviceFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static DeviceFragment newInstance() {
-        return new DeviceFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,7 +129,7 @@ public class DeviceFragment extends Fragment {
             nsdInfo.setServiceType("._http._tcp");
             nsdInfo.setPort(80);
             try {
-                nsdInfo.setHost(InetAddress.getByName("192.168.1.4"));
+                nsdInfo.setHost(InetAddress.getByName("10.16.4.238"));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
