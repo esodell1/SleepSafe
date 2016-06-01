@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 
@@ -29,7 +30,27 @@ public class HrDbFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_hr_db, container, false);
+        View view = inflater.inflate(R.layout.fragment_hr_db, container, false);
+        SeekBar gauge = (SeekBar) view.findViewById(R.id.hr_seekbar);
+        gauge.setMax(140);
+        gauge.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int originalProgress;
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //Nothing here..
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                originalProgress = seekBar.getProgress();
+            }
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int arg1, boolean fromUser) {
+                if( fromUser == true){
+                    seekBar.setProgress( originalProgress);
+                }
+            }
+        });
+        return view;
     }
 
 }

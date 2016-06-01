@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.utils.Utils;
@@ -142,9 +143,15 @@ public class DashboardActivity extends AppCompatActivity {
                         spo2 = intent.getIntExtra("spo2", 0);
                         temp = intent.getIntExtra("temp", 0);
                         TextView hr_val = (TextView) findViewById(R.id.hr_value);
+                        SeekBar hr_gauge = (SeekBar) findViewById(R.id.hr_seekbar);
                         TextView spo2_val = (TextView) findViewById(R.id.spo2_value);
+                        SeekBar spo2_gauge = (SeekBar) findViewById(R.id.spo2_seekbar);
+
                         if (hr_val != null) hr_val.setText(Integer.toString(hr));
+                        if (hr_gauge != null) hr_gauge.setProgress(hr);
                         if (spo2_val != null) spo2_val.setText(Integer.toString(spo2));
+                        if (spo2_gauge != null) spo2_gauge.setProgress(spo2);
+
                         if (start_button.isEnabled()) start_button.setEnabled(false);
                         if (!stop_button.isEnabled()) stop_button.setEnabled(true);
                         break;
