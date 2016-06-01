@@ -1,5 +1,6 @@
 package com.sleepsafe.iot.devices.sleepsafe.helper;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,10 +8,15 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.net.nsd.NsdServiceInfo;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
+import com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,12 +36,13 @@ import java.net.UnknownHostException;
 public class FirmwareOTA {
 
     private static final String TAG = "FirmwareOTA";
-    private static final String DEV_INFO = "AboutDevice";
-    private static final String DEV_UPDATE = "UpdateDeviceFirmware";
+    private static final String DEV_INFO = "devinfo";
+    private static final String DEV_UPDATE = "update";
     private static final String FIRMWARE_FILE_NAME = "sleepsafe.001.bin";
     private static final int FIRMWARE_VERSION = 2;
     private static final String FIRMWARE_VERSION_STRING = "0.0.2";
     private ProgressDialog mProgress;
+    private String mErrorMessage = null;
 
 
     // URL of emulator server (to be replaced by device):
@@ -43,7 +50,6 @@ public class FirmwareOTA {
 
     private Context mContext;
     private FW_Uploader mFW;
-    private DeviceInfo mDeviceInfo;
     private DeviceRequest mDeviceRequest;
 
     public FirmwareOTA(Context context) {
@@ -58,17 +64,18 @@ public class FirmwareOTA {
         mFW = new FW_Uploader();
         mDeviceRequest = new DeviceRequest();
         mDeviceRequest.execute();
-        Log.v("Updater", "Update");
+
     }
 
-    public void checkVersion(DeviceInfo deviceInfo) {
-
+    public final void displayError() {
+        if (mContext != null) {
+            Toast.makeText(mContext, mErrorMessage, Toast.LENGTH_SHORT).show();
+            mErrorMessage = null;
+        }
     }
 
     public class FW_Uploader extends AsyncTask<Void, Void, Void> {
 
-
-        // can use UI thread here
         protected void onPreExecute() {
             mProgress.setMessage("Uploading Firmware...");
             mProgress.setCancelable(false);
@@ -128,6 +135,7 @@ public class FirmwareOTA {
             }
             catch (IOException ioe){
                 Log.e("Debug", "error: " + ioe.getMessage(), ioe);
+                mErrorMessage += ioe.getMessage();
             }
             //------------------ read the SERVER RESPONSE
             try {
@@ -140,13 +148,9 @@ public class FirmwareOTA {
             }
             catch (IOException ioex){
                 Log.e("Debug", "error: " + ioex.getMessage(), ioex);
+                mErrorMessage += ioex.getMessage();
             }
-            // Delay to see progress dialog:
-//            try {
-//                Thread.sleep(3000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+
             return null;
         }
 
@@ -154,7 +158,17 @@ public class FirmwareOTA {
         protected void onPostExecute(Void result) {
 
             if (mProgress.isShowing()) {
-                mProgress.dismiss();
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgress.dismiss();
+                    }
+                }, 3000);
+            }
+            if (mErrorMessage != null) {
+                displayError();
+
             }
         }
     }
@@ -204,6 +218,8 @@ public class FirmwareOTA {
                 jsonStr = buffer.toString();
             } catch (Exception e) {
                 Log.e(TAG, "Error ", e);
+                // Show UI connection error message
+                mErrorMessage += e.getMessage();
                 return null;
             } finally {
                 if (urlConnection != null) {
@@ -222,30 +238,40 @@ public class FirmwareOTA {
                 result = getDataFromJSON(jsonStr);
             } catch (JSONException e) {
                 e.printStackTrace();
+                mErrorMessage += e.getMessage();
                 return null;
             }
             return result;
         }
 
         private DeviceInfo getDataFromJSON(String jsonString) throws JSONException {
-            final String NAME = "Device_Name";
-            final String FIRMWARE = "Firmware_Version";
-            final String SERIAL_NUMBER = "SerialNumber";//FIRMWARE_INT = "firmware_int";
-            //final String BATTERY = "battery";
+            final String NAME = "name";
+            final String FIRMWARE = "firmware";
+            final String SERIAL = "serial";
+            final String FIRMWARE_INT = "firmware_int";
+            final String BATTERY_CHARGE = "battery_charge";
+            final String BATTERY_CURRENT = "battery_current";
+            final String BATTERY_VOLTAGE = "battery_voltage";
+            final String BATTERY_STATE = "battery_state";
 
             JSONObject result = new JSONObject(jsonString);
-            String name = result.getJSONObject(NAME).getString("value");
-            int fw = result.getJSONObject(FIRMWARE).getInt("value");
-            int serial_int = result.getJSONObject(SERIAL_NUMBER).getInt("value");
-            //int battery = result.getInt(BATTERY);
-            return new DeviceInfo (name, fw, serial_int);//, battery);
+            DeviceInfo info = new DeviceInfo();
+            info.mName = result.getString(NAME);
+            info.mFirmware = result.getString(FIRMWARE);
+            info.mFirmwareInt = result.getInt(FIRMWARE_INT);
+            info.mSerial = result.getString(SERIAL);
+            info.mBatteryCharge = result.getDouble(BATTERY_CHARGE);
+            info.mBatteryCurrent = result.getDouble(BATTERY_CURRENT);
+            info.mBatteryVoltage = result.getDouble(BATTERY_VOLTAGE);
+            info.mBatteryState = result.getInt(BATTERY_STATE);
+            return info;
         }
 
         @Override
         protected void onPostExecute(DeviceInfo result) {
             if (result != null) {
 
-                if (result.mFirmware < FIRMWARE_VERSION) {
+                if (result.mFirmwareInt < FIRMWARE_VERSION) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setMessage("Firmware update available!\nCurrent Version: "
                             + result.mFirmware + "\nNewest Version: "
@@ -269,25 +295,28 @@ public class FirmwareOTA {
                 }
 
             }
+
+            if (mErrorMessage != null) {
+                displayError();
+
+            }
         }
     }
 
     public class DeviceInfo {
         public String mName = null;
-        public int mFirmware = 0;
-        public int mSerialNumber = 0;
-        //public int mBattery = 0;
+        public String mFirmware = null;
+        public int mFirmwareInt = 0;
+        public String mSerial = null;
+        public double mBatteryCharge = 0;
+        public double mBatteryCurrent = 0;
+        public double mBatteryVoltage = 0;
+        public int mBatteryState = 0;
 
         public DeviceInfo() {
             // default constructor
         }
 
-        public DeviceInfo(String name, int firmware, int serNum) {//, int battery) {
-            mName = name;
-            mFirmware = firmware;
-            mSerialNumber = serNum;
-            //mBattery = battery;
-        }
     }
 
 }

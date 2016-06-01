@@ -40,7 +40,7 @@ public class DeviceDbFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_device_db, container, false);
-        mFW = new FirmwareOTA(getContext());
+        mFW = new FirmwareOTA(getActivity());
 
         ImageButton refresh = (ImageButton) view.findViewById(R.id.db_device_refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
