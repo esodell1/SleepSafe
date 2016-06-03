@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -77,7 +78,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity" />
         </activity>
-        <receiver android:name=".helper.AlarmManagerBroadcastReceiver" />
+        <receiver android:name="com.sleepsafe.iot.devices.sleepsafe.helper.AlarmManagerBroadcastReceiver" />
     </application>
 
 </manifest>

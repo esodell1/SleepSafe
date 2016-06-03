@@ -91,9 +91,9 @@
     <string name="title_activity_device">Select a Device</string>
     <string name="action_logout">Logout</string>
     <string name="pref_name">sleepsafe_pref_data</string>
-    <string name="pref_alarm_max_hr">pref_alarm_max_hr</string>
-    <string name="pref_alarm_min_hr">pref_alarm_min_hr</string>
-    <string name="pref_alarm_enable_max_hr">pref_alarm_enable_max_hr</string>
-    <string name="pref_alarm_enable_min_hr">pref_alarm_enable_min_hr</string>
+    <string name="pref_alarm_max_spo2">pref_alarm_max_hr</string>
+    <string name="pref_alarm_min_spo2">pref_alarm_min_hr</string>
+    <string name="pref_alarm_enable_max_spo2">pref_alarm_enable_max_hr</string>
+    <string name="pref_alarm_enable_min_spo2">pref_alarm_enable_min_hr</string>
 
 </resources>

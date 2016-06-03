@@ -1,17 +1,15 @@
 package com.sleepsafe.iot.devices.sleepsafe.helper;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.os.PowerManager;
+import android.os.Vibrator;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -22,41 +20,21 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "YOUR TAG");
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "SleepSafe");
         //Acquire the lock
         wl.acquire();
 
-        //You can do the processing here.
-        Bundle extras = intent.getExtras();
-        StringBuilder msgStr = new StringBuilder();
-
-        if (extras != null && extras.getBoolean(ONE_TIME, Boolean.FALSE)) {
-            //Make sure this intent has been sent by the one-time timer button.
-            msgStr.append("One time Timer : ");
+        Toast.makeText(context, "Alarm Tripped.",
+                Toast.LENGTH_LONG).show();
+        // Vibrate the mobile phone
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        if (settings.getBoolean("notifications_alarm_vibrate", true)) {
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(2000);
         }
-        Format formatter = new SimpleDateFormat("hh:mm:ss a", Locale.ENGLISH);
-        msgStr.append(formatter.format(new Date()));
-
-        Toast.makeText(context, msgStr, Toast.LENGTH_LONG).show();
 
         //Release the lock
         wl.release();
-    }
-
-    public void SetAlarm(Context context) {
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
-        intent.putExtra(ONE_TIME, Boolean.FALSE);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
-        //After after 5 seconds
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 5, pi);
-    }
-
-    public void CancelAlarm(Context context) {
-        Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(sender);
     }
 
     public void setOnetimeTimer(Context context) {

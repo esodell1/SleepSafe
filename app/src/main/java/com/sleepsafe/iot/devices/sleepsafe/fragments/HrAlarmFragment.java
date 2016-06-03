@@ -3,7 +3,6 @@ package com.sleepsafe.iot.devices.sleepsafe.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,10 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -42,8 +39,8 @@ public class HrAlarmFragment extends Fragment {
         final View rootView;
         rootView = inflater.inflate(R.layout.fragment_alarms, container, false);
         final SharedPreferences mPref = getActivity().getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
-        int maxHR = mPref.getInt(getString(R.string.pref_alarm_max_hr), 120);
-        int minHR = mPref.getInt(getString(R.string.pref_alarm_min_hr), 50);
+        int maxHR = mPref.getInt(getString(R.string.pref_alarm_max_spo2), 120);
+        int minHR = mPref.getInt(getString(R.string.pref_alarm_min_spo2), 50);
 
         final Switch enableMax = (Switch) rootView.findViewById(R.id.alarm_enable_max);
         final Switch enableMin = (Switch) rootView.findViewById(R.id.alarm_enable_min);
@@ -53,10 +50,10 @@ public class HrAlarmFragment extends Fragment {
 
         final Button minButton = (Button)rootView.findViewById(R.id.alarm_min_button);
         minButton.setText("" + minHR);
-        minButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_min_hr)));
+        minButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_min_spo2)));
         final Button maxButton = (Button)rootView.findViewById(R.id.alarm_max_button);
         maxButton.setText("" + maxHR);
-        maxButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_max_hr)));
+        maxButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_max_spo2)));
 
         enableMax.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,16 +61,16 @@ public class HrAlarmFragment extends Fragment {
                 Log.v("Switch", "Switch changed to " + enableMax.isChecked());
                 maxTitle.setEnabled(enableMax.isChecked());
                 maxButton.setEnabled(enableMax.isChecked());
-                mPref.edit().putBoolean(getString(R.string.pref_alarm_enable_max_hr), enableMax.isChecked()).apply();
+                mPref.edit().putBoolean(getString(R.string.pref_alarm_enable_max_spo2), enableMax.isChecked()).apply();
             }
         });
 
         // initial setup
-        final boolean maxEnable = mPref.getBoolean(getString(R.string.pref_alarm_enable_max_hr), false);
+        final boolean maxEnable = mPref.getBoolean(getString(R.string.pref_alarm_enable_max_spo2), false);
         enableMax.setChecked(maxEnable);
         maxTitle.setEnabled(maxEnable);
         maxButton.setEnabled(maxEnable);
-        final boolean minEnable = mPref.getBoolean(getString(R.string.pref_alarm_enable_min_hr), false);
+        final boolean minEnable = mPref.getBoolean(getString(R.string.pref_alarm_enable_min_spo2), false);
         enableMin.setChecked(minEnable);
         minTitle.setEnabled(minEnable);
         minButton.setEnabled(minEnable);
@@ -84,7 +81,7 @@ public class HrAlarmFragment extends Fragment {
                 Log.v("Switch", "Switch changed to " + enableMax.isChecked());
                 minTitle.setEnabled(enableMin.isChecked());
                 minButton.setEnabled(enableMin.isChecked());
-                mPref.edit().putBoolean(getString(R.string.pref_alarm_enable_min_hr), enableMin.isChecked()).apply();
+                mPref.edit().putBoolean(getString(R.string.pref_alarm_enable_min_spo2), enableMin.isChecked()).apply();
             }
         });
 
@@ -118,12 +115,12 @@ public class HrAlarmFragment extends Fragment {
             aNumberPicker.setValue(currentValue);
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(50, 50);
-            RelativeLayout.LayoutParams numPicerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams numPickerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT);
-            numPicerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            numPickerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
             linearLayout.setLayoutParams(params);
-            linearLayout.addView(aNumberPicker,numPicerParams);
+            linearLayout.addView(aNumberPicker,numPickerParams);
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
             alertDialogBuilder.setTitle("Select a set point");

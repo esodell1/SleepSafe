@@ -204,8 +204,8 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         } else if (id == R.id.action_logout) {
             mSharedPref.edit().putString(getString(R.string.pref_app_username), null).apply();
-            finish();
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            this.finish();
         }
         return super.onOptionsItemSelected(item);
     }

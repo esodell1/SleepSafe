@@ -8,13 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -143,8 +141,9 @@ public class MonitorSvc extends IntentService {
         mCurrentSession = mDBProvider.getNextSession();
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (user == null || user.equals("Guest")) {
-            while (SERVICE_RUNNING) {
+        while (SERVICE_RUNNING) {
+            if (user == null || user.equals("Guest")) {
+
                 Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
                 newSample(sample);
 
@@ -158,9 +157,9 @@ public class MonitorSvc extends IntentService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
-        } else {
-            while (SERVICE_RUNNING) {
+
+            } else {
+
 //                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
 //                newSample(sample);
 
@@ -174,6 +173,7 @@ public class MonitorSvc extends IntentService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
             }
         }
 
@@ -204,10 +204,10 @@ public class MonitorSvc extends IntentService {
         SharedPreferences prefs = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
 
         if (settings.getBoolean("notifications_alarm_enable", true)) {
-            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_max_hr), false)
-                    && (prefs.getInt(getString(R.string.pref_alarm_max_hr), 140) <= sample.hr_val)) mAlarm = true;
-            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_min_hr), false)
-                    && (prefs.getInt(getString(R.string.pref_alarm_min_hr), 40) >= sample.hr_val)) mAlarm = true;
+            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_max_spo2), false)
+                    && (prefs.getInt(getString(R.string.pref_alarm_max_spo2), 140) <= sample.hr_val)) mAlarm = true;
+            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_min_spo2), false)
+                    && (prefs.getInt(getString(R.string.pref_alarm_min_spo2), 40) >= sample.hr_val)) mAlarm = true;
 //            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_max_spo2), false)
 //                    && (prefs.getInt(getString(R.string.pref_alarm_max_spo2), 140) <= sample.spo2_val)) mAlarm = true;
 //            if (prefs.getBoolean(getString(R.string.pref_alarm_enable_min_spo2), false)
@@ -224,9 +224,7 @@ public class MonitorSvc extends IntentService {
         if (mAlarm) {
             // Actuate alarm
             Log.e(TAG, "ALARM ACTUATED");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mNotification.setColor(getResources().getColor(android.R.color.holo_red_light));
-            }
+
             mAlarmManager.setOnetimeTimer(this.getApplicationContext());
             mAlarm = false;
         }

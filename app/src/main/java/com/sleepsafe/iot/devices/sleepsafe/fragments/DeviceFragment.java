@@ -154,14 +154,13 @@ public class DeviceFragment extends Fragment {
                     serviceName.setText(devItem.getServiceName());
                 }
                 if(serviceIP != null && devItem.getHost() != null) {
-                    serviceIP.setText(devItem.getHost().toString());
+                    serviceIP.setText("--");
                 }
             }
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mNSD.resolveService(devItem);
-                    startActivity(new Intent(getContext(), DashboardActivity.class));
                 }
             });
             return v;
@@ -284,7 +283,7 @@ public class DeviceFragment extends Fragment {
                     mDevicePref.edit().putInt(getString(R.string.pref_device_port), serviceInfo.getPort()).apply();
                     mDevicePref.edit().putString(getString(R.string.pref_device_name), serviceInfo.getServiceName()).apply();
                     Log.v(TAG, "Resolve failed SHARED PREF: " + mDevicePref.getAll().keySet());
-
+                    DeviceFragment.this.getActivity().finish();
                 }
                 @Override
                 public void onServiceResolved(android.net.nsd.NsdServiceInfo serviceInfo) {
@@ -295,6 +294,7 @@ public class DeviceFragment extends Fragment {
                     Log.v(TAG, "Resolve success SHARED PREF: " + mDevicePref.getAll().keySet());
                     Log.v(TAG, "Resolve succeeded: " + serviceInfo.toString());
                     mService = serviceInfo;
+                    DeviceFragment.this.getActivity().finish();
                 }
             };
         }

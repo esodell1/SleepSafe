@@ -1,10 +1,15 @@
 package com.sleepsafe.iot.devices.sleepsafe.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +41,7 @@ import com.sleepsafe.iot.devices.sleepsafe.fragments.HrHistoryFragment;
  * @version 1.0
  */
 public class HrActivity extends AppCompatActivity {
+    private static final int PERMISSION_SEND_SMS = 3523;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -58,46 +64,75 @@ public class HrActivity extends AppCompatActivity {
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Log.v("SHARE", "Share clicked!");
-                AlertDialog.Builder builder = new AlertDialog.Builder(HrActivity.this);
-                builder.setTitle("Share Heart Rate Session");
-                builder.setIcon(android.R.drawable.ic_menu_share);
-                builder.setMessage("Please enter recipient Phone Number: ");//email: ");
-                final EditText text = new EditText(HrActivity.this);
-                builder.setView(text);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.v("SHARE", "Share with " + text.getText());
+                if (ContextCompat.checkSelfPermission(HrActivity.this,
+                        Manifest.permission.SEND_SMS)
+                        != PackageManager.PERMISSION_GRANTED) {
 
-                        SharedPreferences myData;
-
-                        myData = getSharedPreferences("SelectedPoint", Context.MODE_PRIVATE);
-                        String mHr = myData.getString("HR", null);
-                        String mTime = myData.getString("Time", null);
-
-                        SmsManager smsManager = SmsManager.getDefault();
-
-                        if (!mHr.equals("--")) {
-                            String message = "My HR was " + mHr + " at " + mTime + ".";
-                            smsManager.sendTextMessage(text.getText().toString(), null, message, null, null);
-                            Log.v("Point was selected", mHr);
-                        } else {
-                            Log.v("Point wasn't selected", mHr);
-                        }
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.show();
+                    ActivityCompat.requestPermissions(HrActivity.this,
+                            new String[]{Manifest.permission.SEND_SMS},
+                            PERMISSION_SEND_SMS);
+                } else {
+                    showSMSDialog();
+                }
                 return false;
             }
         });
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_SEND_SMS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showSMSDialog();
+
+                } else {
+                    Toast.makeText(this, "Cannot send SMS without permissions.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private void showSMSDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(HrActivity.this);
+        builder.setTitle("Share Heart Rate Session");
+        builder.setIcon(android.R.drawable.ic_menu_share);
+        builder.setMessage("Please enter recipient Phone Number: ");//email: ");
+        final EditText text = new EditText(HrActivity.this);
+        builder.setView(text);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.v("SHARE", "Share with " + text.getText());
+
+                SharedPreferences myData;
+
+                myData = getSharedPreferences("SelectedPoint", Context.MODE_PRIVATE);
+                String mHr = myData.getString("HR", null);
+                String mTime = myData.getString("Time", null);
+
+                SmsManager smsManager = SmsManager.getDefault();
+
+                if (!mHr.equals("--")) {
+                    String message = "My HR was " + mHr + " at " + mTime + ".";
+                    smsManager.sendTextMessage(text.getText().toString(), null, message, null, null);
+                    Log.v("Point was selected", mHr);
+                } else {
+                    Log.v("Point wasn't selected", mHr);
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     @Override
