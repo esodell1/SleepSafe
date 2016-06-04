@@ -45,6 +45,7 @@ import com.sleepsafe.iot.devices.sleepsafe.helper.Sample;
  * @version 1.0
  */
 public class MonitorSvc extends IntentService {
+    // Constants and instance fields
     public static boolean SERVICE_RUNNING = false;
     public static final String ACTION_START_SERVICE = "start_svc";
     public static final String ACTION_STOP_SERVICE = "stop_svc";
@@ -147,9 +148,6 @@ public class MonitorSvc extends IntentService {
                 Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
                 newSample(sample);
 
-//                DeviceRequest request = new DeviceRequest();
-//                request.execute(REQUEST_SAMPLE);
-
                 String freq = settings.getString("sync_frequency", "4");
                 int delay = Integer.parseInt(freq) * 1000;
                 try {
@@ -163,9 +161,11 @@ public class MonitorSvc extends IntentService {
 //                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
 //                newSample(sample);
 
+                // Asynchronous device request
                 DeviceRequest request = new DeviceRequest();
                 request.execute(REQUEST_SAMPLE);
 
+                // Sleep the service thread for the duration of the interval
                 String freq = settings.getString("sync_frequency", "4");
                 int delay = Integer.parseInt(freq) * 1000;
                 try {
@@ -187,6 +187,7 @@ public class MonitorSvc extends IntentService {
         // Local store of sample
         samples.add(sample);
 
+        // Save to the DB and broadcast to the app
         if (mDBProvider.insertSample(sample, mCurrentSession)) {
             // Broadcast new sample
             Intent broadcast = new Intent();
@@ -199,7 +200,7 @@ public class MonitorSvc extends IntentService {
             sendBroadcast(broadcast);
         }
 
-        // Verify setpoints:
+        // Verify against set points:
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences prefs = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
 
@@ -216,7 +217,6 @@ public class MonitorSvc extends IntentService {
 
         }
 
-
         // Play sound:
         //play(this, getAlarmSound());
 
@@ -225,13 +225,14 @@ public class MonitorSvc extends IntentService {
             // Actuate alarm
             Log.e(TAG, "ALARM ACTUATED");
 
+            // May need to use Handler instead of AlarmManager
             mAlarmManager.setOnetimeTimer(this.getApplicationContext());
             mAlarm = false;
         }
     }
 
     /**
-     * Stops the service. Should only be called by onDestroy().
+     * Stops the service. Should only be called by onDestroy(). DO NOT CALL DIRECTLY.
      */
     private void stopSvc() {
         SERVICE_RUNNING = false;

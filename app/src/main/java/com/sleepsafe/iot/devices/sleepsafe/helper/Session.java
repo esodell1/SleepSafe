@@ -4,8 +4,17 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class describes the model of a discrete session, taken from the samples data from the DB.
+ * This includes averages for heart rate, blood oxygen saturation, and surface temperature,
+ * as well as a time stamp for organization.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class Session {
-    private int mSessionID = 0;
+    private int mSessionID = -1;
 
     private List<Sample> mSessionData;
 
@@ -30,12 +39,6 @@ public class Session {
         return mSessionData;
     }
 
-    public Session(int session, List<Sample> data) {
-        mSessionData = data;
-        mSessionID = session;
-        computeMetaInfo();
-    }
-
     public void addSample(Sample sample) {
         if (sample != null) mSessionData.add(sample);
     }
@@ -55,6 +58,7 @@ public class Session {
             hr += session.hr_val;
             spo2 += session.spo2_val;
             temp += session.temp_val;
+            if (mSessionID < 0) mSessionID = session.session;
         }
         mHRAverage = (hr / mSessionData.size());
         mSpo2Average = (spo2 / mSessionData.size());

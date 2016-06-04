@@ -19,7 +19,17 @@ import android.widget.TextView;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 
+import java.util.Locale;
 
+/**
+ * This class implements the main view for the heart rate alarms page. This includes linking
+ * the shared preferences for high and low set points to the view, as well as enable and disable
+ * for each.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class HrAlarmFragment extends Fragment {
     private static final int BASE_HR_VALUE = 40;
     private static final int MAX_HR_VALUE = 180;
@@ -49,10 +59,10 @@ public class HrAlarmFragment extends Fragment {
         final TextView minTitle = (TextView) rootView.findViewById(R.id.alarm_min_title);
 
         final Button minButton = (Button)rootView.findViewById(R.id.alarm_min_button);
-        minButton.setText("" + minHR);
+        minButton.setText(String.format(Locale.US, "%d", minHR));
         minButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_min_spo2)));
         final Button maxButton = (Button)rootView.findViewById(R.id.alarm_max_button);
-        maxButton.setText("" + maxHR);
+        maxButton.setText(String.format(Locale.US, "%d", maxHR));
         maxButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_max_spo2)));
 
         enableMax.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +143,7 @@ public class HrAlarmFragment extends Fragment {
                                                     int id) {
                                     Log.v("AlarmFragment", "New Setpoint Value: "+ aNumberPicker.getValue());
                                     mPref.edit().putInt(mPrefString, aNumberPicker.getValue()).apply();
-                                    ((Button) v).setText("" + aNumberPicker.getValue());
+                                    ((Button) v).setText(String.format(Locale.US, "%d", aNumberPicker.getValue()));
                                 }
                             })
                     .setNegativeButton("Cancel",

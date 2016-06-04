@@ -1,10 +1,8 @@
 package com.sleepsafe.iot.devices.sleepsafe.fragments;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +25,19 @@ import com.sleepsafe.iot.devices.sleepsafe.helper.Session;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This class implements the main view for the heart rate history page. This shows a list view
+ * of all available data divided into discrete "sessions", which are enumerated by starting
+ * and stopping the service.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class HrHistoryFragment extends Fragment {
-    private LineChart mHRActivity;
     private HistoryDBProvider mDB;
     private HistoryListAdapter mAdapter;
     private ListView mList;
@@ -73,7 +78,8 @@ public class HrHistoryFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View rowView = inflater.inflate(R.layout.fragment_history_list_item, parent, false);
+            View rowView = convertView;
+            if (rowView == null) rowView = inflater.inflate(R.layout.fragment_history_list_item, parent, false);
             TextView nameTextView = (TextView) rowView.findViewById(R.id.history_item_name);
             TextView avgTextView = (TextView) rowView.findViewById(R.id.history_item_average);
             LineChart chart = (LineChart) rowView.findViewById(R.id.history_item_chart);
@@ -82,8 +88,8 @@ public class HrHistoryFragment extends Fragment {
                     .format(session.getmStart());
             String end = (new SimpleDateFormat("KK:mm:ss a M/d/yyyy", Locale.US))
                     .format(session.getmEnd());
-            nameTextView.setText("From " + start + " to " + end);
-            avgTextView.setText("Session " + (position + 1));
+            nameTextView.setText(String.format(getString(R.string.time_bounds), start, end));
+            avgTextView.setText(getString(R.string.session_enum, position + 1));
 
             populateGraph(chart, session);
             return rowView;
@@ -126,7 +132,7 @@ public class HrHistoryFragment extends Fragment {
                 set1.setColor(getResources().getColor(R.color.graphLine));
                 set1.setDrawValues(false);
 
-                ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
                 dataSets.add(set1); // add the datasets
 
                 // create a data object with the datasets

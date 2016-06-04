@@ -1,13 +1,11 @@
 package com.sleepsafe.iot.devices.sleepsafe.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,14 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.sleepsafe.iot.devices.sleepsafe.R;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.sleepsafe.iot.devices.sleepsafe.R;
-import com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity;
-import com.sleepsafe.iot.devices.sleepsafe.helper.FirmwareOTA;
 
 /**
  * This class implements the main fragment for selecting the
@@ -144,7 +140,7 @@ public class DeviceFragment extends Fragment {
             View v = convertView;
             if (v == null) {
                 LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(R.layout.device_list_item, null);
+                v = vi.inflate(R.layout.device_list_item, parent, false);
             }
             final NsdServiceInfo devItem = devices.get(position);
             if (devItem != null) {
@@ -318,7 +314,8 @@ public class DeviceFragment extends Fragment {
             if (mDiscoveryListener != null) {
                 try {
                     mNsdManager.stopServiceDiscovery(mDiscoveryListener);
-                } finally {
+                } catch (Exception e) {
+                    Log.v(TAG, e.getMessage());
                 }
                 mDiscoveryListener = null;
             }
@@ -331,7 +328,8 @@ public class DeviceFragment extends Fragment {
             if (mRegistrationListener != null) {
                 try {
                     mNsdManager.unregisterService(mRegistrationListener);
-                } finally {
+                } catch (Exception e) {
+                    Log.v(TAG, e.getMessage());
                 }
                 mRegistrationListener = null;
             }

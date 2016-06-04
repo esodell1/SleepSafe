@@ -96,4 +96,7 @@
     <string name="pref_alarm_enable_max_spo2">pref_alarm_enable_max_hr</string>
     <string name="pref_alarm_enable_min_spo2">pref_alarm_enable_min_hr</string>
 
+    <string name="time_bounds">From %1$s to %2$s</string>
+    <string name="session_enum">Session %1$d</string>
+
 </resources>

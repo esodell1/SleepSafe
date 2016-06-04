@@ -1,26 +1,19 @@
 package com.sleepsafe.iot.devices.sleepsafe.fragments;
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
-import com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity;
 import com.sleepsafe.iot.devices.sleepsafe.helper.FirmwareOTA;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
- * A simple {@link Fragment} subclass.
+ * The fragment class for the device object on the dashboard. This is clickable and leads to the mDNS
+ * service discovery via the DeviceActivity.
  *
  * @author Eric Odell
  * @author Ihar Lavor

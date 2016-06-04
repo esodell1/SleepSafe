@@ -14,15 +14,14 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.helper.HistoryDBProvider;
@@ -39,6 +38,13 @@ import java.util.List;
  * Android Design: Settings</a> for design guidelines and the <a
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
+ *
+ * This class implements the main view Dashboard for the SleepSafe app.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ *
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
@@ -199,7 +205,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("pref_graph_scheme"));
 
-            Preference clear = (Preference) findPreference("pref_clear_data");
+            Preference clear = findPreference("pref_clear_data");
             clear.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {

@@ -20,7 +20,17 @@ import android.widget.TextView;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
 
+import java.util.Locale;
 
+/**
+ * This class implements the main view for the blood oxygen alarms page. This includes linking
+ * the shared preferences for high and low set points to the view, as well as enable and disable
+ * for each.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class Spo2AlarmFragment extends Fragment {
     private static final int BASE_SPO2_VALUE = 40;
     private static final int MAX_SPO2_VALUE = 180;
@@ -50,10 +60,10 @@ public class Spo2AlarmFragment extends Fragment {
         final TextView minTitle = (TextView) rootView.findViewById(R.id.alarm_min_title);
 
         final Button minButton = (Button)rootView.findViewById(R.id.alarm_min_button);
-        minButton.setText("" + minSpo2);
+        minButton.setText(String.format(Locale.US, "%d", minSpo2));
         minButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_min_spo2)));
         final Button maxButton = (Button)rootView.findViewById(R.id.alarm_max_button);
-        maxButton.setText("" + maxSpo2);
+        maxButton.setText(String.format(Locale.US, "%d", maxSpo2));
         maxButton.setOnClickListener(new AlarmNumberPicker(getString(R.string.pref_alarm_max_spo2)));
 
         enableMax.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +144,7 @@ public class Spo2AlarmFragment extends Fragment {
                                                     int id) {
                                     Log.v("AlarmFragment", "New Setpoint Value: "+ aNumberPicker.getValue());
                                     mPref.edit().putInt(mPrefString, aNumberPicker.getValue()).apply();
-                                    ((Button) v).setText("" + aNumberPicker.getValue());
+                                    ((Button) v).setText(String.format(Locale.US, "%d", aNumberPicker.getValue()));
                                 }
                             })
                     .setNegativeButton("Cancel",

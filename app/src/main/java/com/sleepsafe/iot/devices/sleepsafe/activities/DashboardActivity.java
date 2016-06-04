@@ -6,29 +6,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
-import android.transition.Scene;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.utils.Utils;
 import com.sleepsafe.iot.devices.sleepsafe.R;
 import com.sleepsafe.iot.devices.sleepsafe.services.MonitorSvc;
+
+import java.util.Locale;
 
 /**
  * This class implements the main view Dashboard for the SleepSafe app.
@@ -67,6 +62,7 @@ public class DashboardActivity extends AppCompatActivity {
         mDeviceIP = (TextView) findViewById(R.id.db_device_ip);
         mDevicePort = (TextView) findViewById(R.id.db_device_port);
 
+        // Register click listeners
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
             fab.setOnClickListener(new View.OnClickListener() {
@@ -98,8 +94,6 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             });
         }
-
-
 
         View deviceDisplay = findViewById(R.id.devicedb);
 
@@ -152,9 +146,9 @@ public class DashboardActivity extends AppCompatActivity {
                         TextView spo2_val = (TextView) findViewById(R.id.spo2_value);
                         SeekBar spo2_gauge = (SeekBar) findViewById(R.id.spo2_seekbar);
 
-                        if (hr_val != null) hr_val.setText(Integer.toString(hr));
+                        if (hr_val != null) hr_val.setText(String.format(Locale.US, "%d", hr));
                         if (hr_gauge != null) hr_gauge.setProgress(hr);
-                        if (spo2_val != null) spo2_val.setText(Integer.toString(spo2));
+                        if (spo2_val != null) spo2_val.setText(String.format(Locale.US, "%d", spo2));
                         if (spo2_gauge != null) spo2_gauge.setProgress(spo2);
 
                         if (start_button.isEnabled()) start_button.setEnabled(false);
@@ -170,7 +164,8 @@ public class DashboardActivity extends AppCompatActivity {
                             msg = intent.getStringExtra("msg");
                         else
                             msg = "General Error";
-                        Snackbar.make((CoordinatorLayout)findViewById(R.id.app_frame),
+                        View frame = findViewById(R.id.app_frame);
+                        if (frame != null) Snackbar.make(frame,
                                 "Error connecting to device: " + msg, Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                         Intent broadcast = new Intent();
@@ -183,23 +178,21 @@ public class DashboardActivity extends AppCompatActivity {
                         Log.e("Message", "Unhandled broadcast received!");
                         break;
                 }
-
             }
         };
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu
         getMenuInflater().inflate(R.menu.menu_dashboard, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Define menu item listeners
         int id = item.getItemId();
-
         if (id == R.id.action_settings) {
             startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         } else if (id == R.id.action_logout) {
@@ -212,12 +205,15 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        // Register the broadcast receiver to listen for service updates:
         mSharedPref = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
         IntentFilter filter = new IntentFilter();
         filter.addAction("new_sample");
         filter.addAction("service_running");
         filter.addAction("failed_sample");
         registerReceiver(mReceiver,filter);
+
+        // Update device parameters from shared pref
         String ip = mSharedPref.getString(getString(R.string.pref_device_ip), "0.0.0.0");
         Log.v("Dashboard", "IP found: " + ip);
         mDeviceIP.setText(ip);
@@ -232,13 +228,14 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        // Unregister the receiver (prevents memory leak and other bad things)
         unregisterReceiver(mReceiver);
         super.onPause();
     }
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
+        // Close the dashboard
         new AlertDialog.Builder(this)
                 .setTitle("Really Exit?")
                 .setMessage("Are you sure you want to exit?")
@@ -246,8 +243,7 @@ public class DashboardActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface arg0, int arg1) {
-//                        finish();
-                        moveTaskToBack(true);
+                        DashboardActivity.this.finish();
                     }
                 }).create().show();
     }

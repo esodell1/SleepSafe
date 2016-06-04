@@ -2,8 +2,6 @@ package com.sleepsafe.iot.devices.sleepsafe.helper;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * This class describes the model of a discrete sample, taken from the SleepSafe device. This

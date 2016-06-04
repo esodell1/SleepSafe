@@ -1,22 +1,16 @@
 package com.sleepsafe.iot.devices.sleepsafe.helper;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.net.nsd.NsdServiceInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.sleepsafe.iot.devices.sleepsafe.R;
-import com.sleepsafe.iot.devices.sleepsafe.activities.DashboardActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,11 +22,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 
-
+/**
+ * This class implements a helper object that handles the checking of device firmware
+ * and handles the direct transfer of the binary firmware data file to the device for
+ * Firmware OTA mode.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class FirmwareOTA {
 
     private static final String TAG = "FirmwareOTA";
@@ -85,8 +85,8 @@ public class FirmwareOTA {
         @Override
         protected Void doInBackground(Void... nsd) {
             HttpURLConnection conn = null;
-            DataOutputStream dos = null;
-            DataInputStream inStream = null;
+            DataOutputStream dos;
+            DataInputStream inStream;
             String lineEnd = "\r\n";
             String twoHyphens = "--";
             String boundary =  "*****";
@@ -139,6 +139,7 @@ public class FirmwareOTA {
             }
             //------------------ read the SERVER RESPONSE
             try {
+                assert conn != null;
                 inStream = new DataInputStream ( conn.getInputStream() );
                 String str;
                 while (( str = inStream.readLine()) != null){

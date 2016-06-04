@@ -213,6 +213,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
         getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE).edit().putString(getString(R.string.pref_app_username), email).apply();
         startActivity(intent);
+        LoginActivity.this.finish();
     }
 
     /**
@@ -379,7 +380,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         };
 
         int ADDRESS = 0;
-        int IS_PRIMARY = 1;
     }
 
 

@@ -9,10 +9,16 @@ import android.content.SharedPreferences;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
-
+/**
+ * This class implements the main receiver of the broadcast alarms that are trigger by the monitor
+ * service MonitorSvc. It will alert a user of an alarming condition.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 
     final public static String ONE_TIME = "onetime";

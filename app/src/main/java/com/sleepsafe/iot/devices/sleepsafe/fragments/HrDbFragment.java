@@ -1,10 +1,6 @@
 package com.sleepsafe.iot.devices.sleepsafe.fragments;
 
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,7 +12,8 @@ import com.sleepsafe.iot.devices.sleepsafe.R;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * This is the fragment class for the heart rate dashboard object. This shows the current heart
+ * rate to the user, as well as a sliding scale which reflects the range.
  *
  * @author Eric Odell
  * @author Ihar Lavor
@@ -49,7 +46,7 @@ public class HrDbFragment extends Fragment {
             }
             @Override
             public void onProgressChanged(SeekBar seekBar, int arg1, boolean fromUser) {
-                if( fromUser == true){
+                if(fromUser){
                     seekBar.setProgress( originalProgress);
                 }
             }

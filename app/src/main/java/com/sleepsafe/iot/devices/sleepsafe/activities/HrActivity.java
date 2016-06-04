@@ -3,28 +3,24 @@ package com.sleepsafe.iot.devices.sleepsafe.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.support.design.widget.Snackbar;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -42,20 +38,6 @@ import com.sleepsafe.iot.devices.sleepsafe.fragments.HrHistoryFragment;
  */
 public class HrActivity extends AppCompatActivity {
     private static final int PERMISSION_SEND_SMS = 3523;
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,7 +64,7 @@ public class HrActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_SEND_SMS: {
                 // If request is cancelled, the result arrays are empty.
@@ -99,9 +81,9 @@ public class HrActivity extends AppCompatActivity {
 
     private void showSMSDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(HrActivity.this);
-        builder.setTitle("Share Heart Rate Session");
+        builder.setTitle("Share Heart Rate Sample");
         builder.setIcon(android.R.drawable.ic_menu_share);
-        builder.setMessage("Please enter recipient Phone Number: ");//email: ");
+        builder.setMessage("Please enter recipient phone number: ");
         final EditText text = new EditText(HrActivity.this);
         builder.setView(text);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -117,7 +99,7 @@ public class HrActivity extends AppCompatActivity {
 
                 SmsManager smsManager = SmsManager.getDefault();
 
-                if (!mHr.equals("--")) {
+                if (mHr != null && !mHr.equals("--")) {
                     String message = "My HR was " + mHr + " at " + mTime + ".";
                     smsManager.sendTextMessage(text.getText().toString(), null, message, null, null);
                     Log.v("Point was selected", mHr);
@@ -142,14 +124,11 @@ public class HrActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container_hr);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container_hr);
         if (mViewPager != null) {
             mViewPager.setAdapter(mSectionsPagerAdapter);
         }
@@ -158,9 +137,6 @@ public class HrActivity extends AppCompatActivity {
         if (tabLayout != null) {
             tabLayout.setupWithViewPager(mViewPager);
         }
-
-
-
     }
 
 
@@ -170,11 +146,8 @@ public class HrActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private Context mContext;
-
         public SectionsPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
-            mContext = context;
         }
 
         @Override

@@ -34,6 +34,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * This class implements the main view for the heart rate activity page. This includes
+ * the graph, point selection, and data view.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class HrActivityFragment extends Fragment implements OnChartValueSelectedListener {
 
     private LineChart mHRActivity;
@@ -49,6 +57,8 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Listen for new sample broadcasts
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -100,6 +110,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         getActivity().registerReceiver(mReceiver,filter);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         // Populate graph data and display
         LineDataSet set1;
         ArrayList<Sample> samples = (ArrayList<Sample>) mDB.getCurrentSessionSamples();
@@ -150,7 +161,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
 
 
 
-            ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1); // add the datasets
 
             // create a data object with the datasets
@@ -161,8 +172,6 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
         }
 
     }
-
-    public static final String MY_PREFS_NAME = "SelectedData";
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
@@ -184,7 +193,7 @@ public class HrActivityFragment extends Fragment implements OnChartValueSelected
 
         editor.putString("HR", mPointValue.getText().toString());
         editor.putString("Time", mPointTime.getText().toString());
-        editor.commit();
+        editor.apply();
     }
     @Override
     public void onNothingSelected() {

@@ -34,6 +34,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * This class implements the main view for the blood oxygen activity page. This includes
+ * the graph, point selection, and data view.
+ *
+ * @author Eric Odell
+ * @author Ihar Lavor
+ * @version 1.0
+ */
 public class Spo2ActivityFragment extends Fragment implements OnChartValueSelectedListener {
 
     private LineChart mSpo2Activity;
@@ -150,7 +158,7 @@ public class Spo2ActivityFragment extends Fragment implements OnChartValueSelect
 
 
 
-            ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1); // add the datasets
 
             // create a data object with the datasets
@@ -182,7 +190,7 @@ public class Spo2ActivityFragment extends Fragment implements OnChartValueSelect
 
         editor.putString("HR", mPointValue.getText().toString());
         editor.putString("Time", mPointTime.getText().toString());
-        editor.commit();
+        editor.apply();
     }
 
     @Override

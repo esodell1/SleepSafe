@@ -12,7 +12,8 @@ import com.sleepsafe.iot.devices.sleepsafe.R;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * This is the fragment class for the blood oxygen dashboard object. This shows the current heart
+ * rate to the user, as well as a sliding scale which reflects the range.
  *
  * @author Eric Odell
  * @author Ihar Lavor
@@ -44,7 +45,7 @@ public class Spo2DbFragment extends Fragment {
             }
             @Override
             public void onProgressChanged(SeekBar seekBar, int arg1, boolean fromUser) {
-                if( fromUser == true){
+                if(fromUser){
                     seekBar.setProgress( originalProgress);
                 }
             }

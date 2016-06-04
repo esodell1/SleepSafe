@@ -24,8 +24,7 @@ public class DeviceActivity extends AppCompatActivity implements DeviceFragment.
         setContentView(R.layout.activity_device);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
