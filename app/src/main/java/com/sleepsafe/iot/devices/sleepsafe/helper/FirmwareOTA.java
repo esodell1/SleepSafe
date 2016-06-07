@@ -252,7 +252,11 @@ public class FirmwareOTA {
             }
             DeviceInfo result;
             try {
-                result = getDataFromJSON(jsonStr);
+                if (isUpdate) {
+                    result = new DeviceInfo();
+                } else {
+                    result = getDataFromJSON(jsonStr);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
                 mErrorMessage += e.getMessage();
