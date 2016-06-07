@@ -50,7 +50,6 @@ public class FirmwareOTA {
 
     private Context mContext;
     private FW_Uploader mFW;
-    private DeviceRequest mDeviceRequest;
 
     public FirmwareOTA(Context context) {
         mContext = context;
@@ -62,7 +61,7 @@ public class FirmwareOTA {
         BASE_URL = "http:/" + prefs.getString(mContext.getString(R.string.pref_device_ip), "192.168.24.23")
                 + ":" + prefs.getInt(mContext.getString(R.string.pref_device_port), 80) + "/";
         mFW = new FW_Uploader();
-        mDeviceRequest = new DeviceRequest();
+        DeviceRequest mDeviceRequest = new DeviceRequest();
         mDeviceRequest.execute();
 
     }

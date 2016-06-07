@@ -142,10 +142,10 @@ public class MonitorSvc extends IntentService {
         mCurrentSession = mDBProvider.getNextSession();
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
-        while (SERVICE_RUNNING) {
-            if (user == null || user.equals("Guest")) {
+        if (user == null || user.equals("Guest")) {
+            while (SERVICE_RUNNING) {
 
-                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
+                Sample sample = new Sample((int) (70 + (Math.random() * 40)), (int) (90 + (Math.random() * 10)), 90);
                 newSample(sample);
 
                 String freq = settings.getString("sync_frequency", "4");
@@ -156,7 +156,10 @@ public class MonitorSvc extends IntentService {
                     e.printStackTrace();
                 }
 
-            } else {
+            }
+        } else {
+            while (SERVICE_RUNNING) {
+
 
 //                Sample sample = new Sample((int)(70 + (Math.random() * 40)), (int)(90 + (Math.random() * 10)), 90);
 //                newSample(sample);
@@ -353,15 +356,16 @@ public class MonitorSvc extends IntentService {
         }
 
         private Sample getSampleFromJSON(String jsonString) throws JSONException {
-            final String HR_DATA = "HR";
-            final String SPO2_DATA = "SpO2";
-            final String TEMP_DATA = "Temp";
-            final String val = "value";
+            final String HR_DATA = "hr";
+            final String SPO2_DATA = "spo2";
+            final String TEMP_DATA = "temp";
+
+            Log.v(TAG, "JSON: " + jsonString);
 
             JSONObject result = new JSONObject(jsonString);
-            int hr = result.getJSONObject(HR_DATA).getInt(val);
-            int spo2 = result.getJSONObject(SPO2_DATA).getInt(val);
-            int temp = result.getJSONObject(TEMP_DATA).getInt(val);
+            int hr = result.getInt(HR_DATA);
+            int spo2 = result.getInt(SPO2_DATA);
+            int temp = result.getInt(TEMP_DATA);
             return new Sample (hr, spo2, temp);
         }
 
