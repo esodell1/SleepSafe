@@ -38,6 +38,7 @@ public class FirmwareOTA {
     private static final String TAG = "FirmwareOTA";
     private static final String DEV_INFO = "devinfo";
     private static final String DEV_UPDATE = "update";
+    private static final String HTTP_GET_UPDATE = "update";
     private static final String FIRMWARE_FILE_NAME = "sleepsafe.001.bin";
     private static final int FIRMWARE_VERSION = 2;
     private static final String FIRMWARE_VERSION_STRING = "0.0.2";
@@ -62,7 +63,7 @@ public class FirmwareOTA {
                 + ":" + prefs.getInt(mContext.getString(R.string.pref_device_port), 80) + "/";
         mFW = new FW_Uploader();
         DeviceRequest mDeviceRequest = new DeviceRequest();
-        mDeviceRequest.execute();
+        mDeviceRequest.execute(DEV_INFO);
 
     }
 
@@ -177,10 +178,12 @@ public class FirmwareOTA {
     /**
      * This class provides an asynchronous HTTP request helper so the service may query the device.
      */
-    private class DeviceRequest extends AsyncTask<Void, Void, DeviceInfo> {
+    private class DeviceRequest extends AsyncTask<String, Void, DeviceInfo> {
+
+        private boolean isUpdate = false;
 
         @Override
-        protected DeviceInfo doInBackground(Void... params) {
+        protected DeviceInfo doInBackground(String... params) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
@@ -188,10 +191,24 @@ public class FirmwareOTA {
             String jsonStr = null;
 
             try {
-                String urlString = BASE_URL + DEV_INFO;
+                //if (params[0] == null) return null;
+                String urlString;
+
+                switch (params[0]) {
+                    case DEV_INFO:
+                        urlString = BASE_URL + DEV_INFO;
+                        break;
+                    case DEV_UPDATE:
+                        urlString = BASE_URL + HTTP_GET_UPDATE;
+                        isUpdate = true;
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Bad argument for request parameter.");
+                }
 
 
                 URL url = new URL(urlString);
+                Log.v(TAG, urlString);
                 // Create the request to the device, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -271,6 +288,11 @@ public class FirmwareOTA {
         protected void onPostExecute(DeviceInfo result) {
             if (result != null) {
 
+                if (isUpdate) {
+                    mFW.execute();
+                    return;
+                }
+
                 if (result.mFirmwareInt < FIRMWARE_VERSION) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setMessage("Firmware update available!\nCurrent Version: "
@@ -287,7 +309,9 @@ public class FirmwareOTA {
                     builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mFW.execute();
+                            DeviceRequest updateReq = new DeviceRequest();
+                            updateReq.execute(HTTP_GET_UPDATE);
+
                         }
                     });
                     builder.show();

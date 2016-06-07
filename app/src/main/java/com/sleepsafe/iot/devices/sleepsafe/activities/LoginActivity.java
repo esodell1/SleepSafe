@@ -222,6 +222,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin(final String action) {
+
+
         if (mAuthTask != null) {
             return;
         }
@@ -234,6 +236,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+        // REMOVE FROM CODE AFTER DEMO
+        showProgress(true);
+        mAuthTask = new ServerAsyncTask(email, password);
+        mAuthTask.execute(action);
+
+        /*
         boolean cancel = false;
         View focusView = null;
 
@@ -266,6 +274,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = new ServerAsyncTask(email, password);
             mAuthTask.execute(action);
         }
+        */
     }
 
     /**
